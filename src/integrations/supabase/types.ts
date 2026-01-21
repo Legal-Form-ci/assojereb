@@ -14,16 +14,425 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      contribution_categories: {
+        Row: {
+          created_at: string
+          description: string | null
+          display_order: number
+          id: string
+          is_active: boolean
+          monthly_amount: number
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          monthly_amount?: number
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          monthly_amount?: number
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      contributions: {
+        Row: {
+          amount: number
+          contribution_type: Database["public"]["Enums"]["contribution_type"]
+          created_at: string
+          exceptional_contribution_id: string | null
+          id: string
+          member_id: string
+          notes: string | null
+          paid_at: string | null
+          payment_method: string | null
+          payment_reference: string | null
+          period_month: number | null
+          period_year: number | null
+          recorded_by: string | null
+          status: Database["public"]["Enums"]["contribution_status"]
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          contribution_type: Database["public"]["Enums"]["contribution_type"]
+          created_at?: string
+          exceptional_contribution_id?: string | null
+          id?: string
+          member_id: string
+          notes?: string | null
+          paid_at?: string | null
+          payment_method?: string | null
+          payment_reference?: string | null
+          period_month?: number | null
+          period_year?: number | null
+          recorded_by?: string | null
+          status?: Database["public"]["Enums"]["contribution_status"]
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          contribution_type?: Database["public"]["Enums"]["contribution_type"]
+          created_at?: string
+          exceptional_contribution_id?: string | null
+          id?: string
+          member_id?: string
+          notes?: string | null
+          paid_at?: string | null
+          payment_method?: string | null
+          payment_reference?: string | null
+          period_month?: number | null
+          period_year?: number | null
+          recorded_by?: string | null
+          status?: Database["public"]["Enums"]["contribution_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contributions_exceptional_contribution_id_fkey"
+            columns: ["exceptional_contribution_id"]
+            isOneToOne: false
+            referencedRelation: "exceptional_contributions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contributions_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      exceptional_contributions: {
+        Row: {
+          amount: number
+          created_at: string
+          created_by: string | null
+          description: string | null
+          due_date: string | null
+          id: string
+          is_active: boolean
+          is_mandatory: boolean
+          title: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          is_active?: boolean
+          is_mandatory?: boolean
+          title: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          is_active?: boolean
+          is_mandatory?: boolean
+          title?: string
+        }
+        Relationships: []
+      }
+      families: {
+        Row: {
+          created_at: string
+          description: string | null
+          display_order: number
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      houses: {
+        Row: {
+          created_at: string
+          description: string | null
+          family_id: string | null
+          house_number: number
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          family_id?: string | null
+          house_number: number
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          family_id?: string | null
+          house_number?: number
+          id?: string
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "houses_family_id_fkey"
+            columns: ["family_id"]
+            isOneToOne: false
+            referencedRelation: "families"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      members: {
+        Row: {
+          address: string | null
+          contribution_category_id: string | null
+          created_at: string
+          date_of_birth: string | null
+          email: string | null
+          family_id: string
+          first_name: string
+          gender: Database["public"]["Enums"]["gender"]
+          geographic_zone: Database["public"]["Enums"]["geographic_zone"]
+          house_id: string | null
+          id: string
+          last_name: string
+          member_number: string
+          notes: string | null
+          phone: string | null
+          photo_url: string | null
+          profession: string | null
+          registered_by: string | null
+          status: Database["public"]["Enums"]["member_status"]
+          updated_at: string
+          whatsapp: string | null
+        }
+        Insert: {
+          address?: string | null
+          contribution_category_id?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          email?: string | null
+          family_id: string
+          first_name: string
+          gender: Database["public"]["Enums"]["gender"]
+          geographic_zone?: Database["public"]["Enums"]["geographic_zone"]
+          house_id?: string | null
+          id?: string
+          last_name: string
+          member_number: string
+          notes?: string | null
+          phone?: string | null
+          photo_url?: string | null
+          profession?: string | null
+          registered_by?: string | null
+          status?: Database["public"]["Enums"]["member_status"]
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Update: {
+          address?: string | null
+          contribution_category_id?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          email?: string | null
+          family_id?: string
+          first_name?: string
+          gender?: Database["public"]["Enums"]["gender"]
+          geographic_zone?: Database["public"]["Enums"]["geographic_zone"]
+          house_id?: string | null
+          id?: string
+          last_name?: string
+          member_number?: string
+          notes?: string | null
+          phone?: string | null
+          photo_url?: string | null
+          profession?: string | null
+          registered_by?: string | null
+          status?: Database["public"]["Enums"]["member_status"]
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "members_contribution_category_id_fkey"
+            columns: ["contribution_category_id"]
+            isOneToOne: false
+            referencedRelation: "contribution_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "members_family_id_fkey"
+            columns: ["family_id"]
+            isOneToOne: false
+            referencedRelation: "families"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "members_house_id_fkey"
+            columns: ["house_id"]
+            isOneToOne: false
+            referencedRelation: "houses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean
+          member_id: string | null
+          message: string
+          title: string
+          type: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          member_id?: string | null
+          message: string
+          title: string
+          type?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          member_id?: string | null
+          message?: string
+          title?: string
+          type?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          phone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          family_id: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          family_id?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          family_id?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_roles_family_id_fkey"
+            columns: ["family_id"]
+            isOneToOne: false
+            referencedRelation: "families"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_member_number: { Args: never; Returns: string }
+      get_user_role: {
+        Args: { _user_id: string }
+        Returns: Database["public"]["Enums"]["app_role"]
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "responsable" | "membre"
+      contribution_status: "payee" | "en_attente" | "en_retard" | "annulee"
+      contribution_type: "mensuelle" | "exceptionnelle" | "adhesion"
+      gender: "homme" | "femme"
+      geographic_zone: "abidjan" | "village" | "exterieur" | "diaspora"
+      member_status: "actif" | "inactif" | "sympathisant"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +559,13 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "responsable", "membre"],
+      contribution_status: ["payee", "en_attente", "en_retard", "annulee"],
+      contribution_type: ["mensuelle", "exceptionnelle", "adhesion"],
+      gender: ["homme", "femme"],
+      geographic_zone: ["abidjan", "village", "exterieur", "diaspora"],
+      member_status: ["actif", "inactif", "sympathisant"],
+    },
   },
 } as const

@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { 
   Users, 
@@ -50,8 +49,6 @@ const families = [
 ];
 
 export default function LandingPage() {
-  const { user } = useAuth();
-
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -65,23 +62,15 @@ export default function LandingPage() {
           </Link>
           
           <nav className="flex items-center gap-4">
-            {user ? (
-              <Button asChild className="btn-primary-gradient">
-                <Link to="/dashboard">
-                  Mon espace
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-            ) : (
-              <>
-                <Button variant="ghost" asChild>
-                  <Link to="/auth">Connexion</Link>
-                </Button>
-                <Button asChild className="btn-primary-gradient">
-                  <Link to="/auth">S'inscrire</Link>
-                </Button>
-              </>
-            )}
+            <Button variant="ghost" asChild>
+              <Link to="/auth">Connexion</Link>
+            </Button>
+            <Button asChild className="btn-primary-gradient">
+              <Link to="/dashboard">
+                Mon espace
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
           </nav>
         </div>
       </header>

@@ -1,7 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Contribution, ContributionType, ContributionStatus } from '@/types/database';
 import { toast } from 'sonner';
+import type { Tables } from '@/integrations/supabase/types';
+
+type Contribution = Tables<'contributions'>;
+type ContributionType = 'mensuelle' | 'exceptionnelle' | 'adhesion';
+type ContributionStatus = 'payee' | 'en_attente' | 'en_retard' | 'annulee';
 
 export interface ContributionFormData {
   member_id: string;
@@ -17,24 +21,34 @@ export interface ContributionFormData {
   notes?: string;
 }
 
-export function useContributions() {
+export function useContributions(memberId?: string) {
   const queryClient = useQueryClient();
 
-  const { data: contributions = [], isLoading, error } = useQuery({
-    queryKey: ['contributions'],
+  // Query for member-specific contributions
+  const { data: memberContributions = [], isLoading: memberLoading } = useQuery({
+    queryKey: ['contributions', 'member', memberId],
+    queryFn: async () => {
+      if (!memberId) return [];
+      
+      const { data, error } = await supabase
+        .from('contributions')
+        .select('*')
+        .eq('member_id', memberId)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data as Contribution[];
+    },
+    enabled: !!memberId,
+  });
+
+  // Query for all contributions
+  const { data: allContributions = [], isLoading: allLoading } = useQuery({
+    queryKey: ['contributions', 'all'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('contributions')
-        .select(`
-          *,
-          member:members(
-            id,
-            first_name,
-            last_name,
-            member_number,
-            family:families(name)
-          )
-        `)
+        .select('*')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -109,31 +123,22 @@ export function useContributions() {
     },
   });
 
+  // Calculate stats from all contributions
+  const stats = {
+    totalCollected: allContributions.filter(c => c.status === 'payee').reduce((sum, c) => sum + c.amount, 0),
+    paidCount: allContributions.filter(c => c.status === 'payee').length,
+    pendingCount: allContributions.filter(c => c.status === 'en_attente').length,
+    lateCount: allContributions.filter(c => c.status === 'en_retard').length,
+  };
+
   return {
-    contributions,
-    isLoading,
-    error,
+    contributions: memberId ? memberContributions : allContributions,
+    allContributions,
+    isLoading: memberLoading || allLoading,
+    error: null,
     createContribution,
     updateContribution,
     deleteContribution,
+    stats,
   };
-}
-
-export function useMemberContributions(memberId: string | undefined) {
-  return useQuery({
-    queryKey: ['contributions', 'member', memberId],
-    queryFn: async () => {
-      if (!memberId) return [];
-      
-      const { data, error } = await supabase
-        .from('contributions')
-        .select('*')
-        .eq('member_id', memberId)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      return data as Contribution[];
-    },
-    enabled: !!memberId,
-  });
 }

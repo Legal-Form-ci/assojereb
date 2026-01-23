@@ -233,6 +233,7 @@ export type Database = {
           registered_by: string | null
           status: Database["public"]["Enums"]["member_status"]
           updated_at: string
+          user_id: string | null
           whatsapp: string | null
         }
         Insert: {
@@ -256,6 +257,7 @@ export type Database = {
           registered_by?: string | null
           status?: Database["public"]["Enums"]["member_status"]
           updated_at?: string
+          user_id?: string | null
           whatsapp?: string | null
         }
         Update: {
@@ -279,6 +281,7 @@ export type Database = {
           registered_by?: string | null
           status?: Database["public"]["Enums"]["member_status"]
           updated_at?: string
+          user_id?: string | null
           whatsapp?: string | null
         }
         Relationships: [
@@ -304,6 +307,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      news: {
+        Row: {
+          category: string
+          content: string
+          created_at: string
+          created_by: string | null
+          id: string
+          image_url: string | null
+          is_published: boolean
+          published_at: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          content: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          image_url?: string | null
+          is_published?: boolean
+          published_at?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          content?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          image_url?: string | null
+          is_published?: boolean
+          published_at?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       notifications: {
         Row: {
@@ -352,6 +394,7 @@ export type Database = {
           created_at: string
           full_name: string | null
           id: string
+          must_change_password: boolean
           phone: string | null
           updated_at: string
           user_id: string
@@ -361,6 +404,7 @@ export type Database = {
           created_at?: string
           full_name?: string | null
           id?: string
+          must_change_password?: boolean
           phone?: string | null
           updated_at?: string
           user_id: string
@@ -370,6 +414,7 @@ export type Database = {
           created_at?: string
           full_name?: string | null
           id?: string
+          must_change_password?: boolean
           phone?: string | null
           updated_at?: string
           user_id?: string

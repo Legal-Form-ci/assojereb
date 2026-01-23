@@ -10,12 +10,15 @@ import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Members from "./pages/Members";
 import NewMember from "./pages/NewMember";
+import EditMember from "./pages/EditMember";
 import MemberDetail from "./pages/MemberDetail";
 import Contributions from "./pages/Contributions";
 import NewContribution from "./pages/NewContribution";
+import ExceptionalContributions from "./pages/ExceptionalContributions";
 import Notifications from "./pages/Notifications";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
+import NewsManagement from "./pages/NewsManagement";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
@@ -44,11 +47,17 @@ const App = () => (
             <Route path="/membres/:id" element={
               <ProtectedRoute><MemberDetail /></ProtectedRoute>
             } />
+            <Route path="/membres/:id/modifier" element={
+              <ProtectedRoute><EditMember /></ProtectedRoute>
+            } />
             <Route path="/cotisations" element={
               <ProtectedRoute><Contributions /></ProtectedRoute>
             } />
             <Route path="/cotisations/nouveau" element={
               <ProtectedRoute><NewContribution /></ProtectedRoute>
+            } />
+            <Route path="/cotisations/exceptionnelles" element={
+              <ProtectedRoute><ExceptionalContributions /></ProtectedRoute>
             } />
             <Route path="/notifications" element={
               <ProtectedRoute><Notifications /></ProtectedRoute>
@@ -58,6 +67,9 @@ const App = () => (
             } />
             <Route path="/parametres" element={
               <ProtectedRoute><Settings /></ProtectedRoute>
+            } />
+            <Route path="/actualites" element={
+              <ProtectedRoute><NewsManagement /></ProtectedRoute>
             } />
             
             {/* Catch-all */}

@@ -14,6 +14,8 @@ import {
   UserPlus,
   Menu,
   X,
+  Star,
+  Newspaper,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
@@ -21,9 +23,11 @@ import { useState } from 'react';
 const navItems = [
   { icon: LayoutDashboard, label: 'Tableau de bord', href: '/dashboard' },
   { icon: Users, label: 'Membres', href: '/membres' },
-  { icon: UserPlus, label: 'Nouveau membre', href: '/membres/nouveau' },
+  { icon: UserPlus, label: 'Nouveau membre', href: '/membres/nouveau', adminOnly: true },
   { icon: Wallet, label: 'Cotisations', href: '/cotisations' },
-  { icon: CreditCard, label: 'Enregistrer paiement', href: '/cotisations/nouveau' },
+  { icon: CreditCard, label: 'Enregistrer paiement', href: '/cotisations/nouveau', adminOnly: true },
+  { icon: Star, label: 'Cotisations exceptionnelles', href: '/cotisations-exceptionnelles' },
+  { icon: Newspaper, label: 'Actualités', href: '/actualites', adminOnly: true },
   { icon: Bell, label: 'Notifications', href: '/notifications' },
   { icon: FileText, label: 'Rapports', href: '/rapports' },
   { icon: Settings, label: 'Paramètres', href: '/parametres', adminOnly: true },

@@ -56,7 +56,7 @@ const App = () => (
             <Route path="/cotisations/nouveau" element={
               <ProtectedRoute><NewContribution /></ProtectedRoute>
             } />
-            <Route path="/cotisations/exceptionnelles" element={
+            <Route path="/cotisations-exceptionnelles" element={
               <ProtectedRoute><ExceptionalContributions /></ProtectedRoute>
             } />
             <Route path="/notifications" element={

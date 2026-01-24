@@ -347,6 +347,144 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_queue: {
+        Row: {
+          body: string
+          channel: string
+          created_at: string
+          error_message: string | null
+          id: string
+          recipient_email: string | null
+          recipient_member_id: string | null
+          recipient_phone: string | null
+          retry_count: number | null
+          scheduled_at: string
+          sent_at: string | null
+          status: string
+          subject: string | null
+          template_id: string | null
+          variables: Json | null
+        }
+        Insert: {
+          body: string
+          channel: string
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          recipient_email?: string | null
+          recipient_member_id?: string | null
+          recipient_phone?: string | null
+          retry_count?: number | null
+          scheduled_at?: string
+          sent_at?: string | null
+          status?: string
+          subject?: string | null
+          template_id?: string | null
+          variables?: Json | null
+        }
+        Update: {
+          body?: string
+          channel?: string
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          recipient_email?: string | null
+          recipient_member_id?: string | null
+          recipient_phone?: string | null
+          retry_count?: number | null
+          scheduled_at?: string
+          sent_at?: string | null
+          status?: string
+          subject?: string | null
+          template_id?: string | null
+          variables?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_queue_recipient_member_id_fkey"
+            columns: ["recipient_member_id"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notification_queue_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "notification_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notification_settings: {
+        Row: {
+          created_at: string
+          email_enabled: boolean | null
+          id: string
+          push_enabled: boolean | null
+          reminder_days_before: number | null
+          sms_enabled: boolean | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email_enabled?: boolean | null
+          id?: string
+          push_enabled?: boolean | null
+          reminder_days_before?: number | null
+          sms_enabled?: boolean | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email_enabled?: boolean | null
+          id?: string
+          push_enabled?: boolean | null
+          reminder_days_before?: number | null
+          sms_enabled?: boolean | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      notification_templates: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          is_active: boolean | null
+          name: string
+          subject: string | null
+          type: string
+          updated_at: string
+          variables: Json | null
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          name: string
+          subject?: string | null
+          type: string
+          updated_at?: string
+          variables?: Json | null
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          subject?: string | null
+          type?: string
+          updated_at?: string
+          variables?: Json | null
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           created_at: string

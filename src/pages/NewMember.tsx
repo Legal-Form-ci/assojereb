@@ -8,9 +8,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, ArrowLeft, Save } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Loader2, ArrowLeft, Save, Eye, EyeOff, Info } from 'lucide-react';
 import { Gender, GeographicZone, MemberStatus } from '@/types/database';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export default function NewMemberPage() {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ export default function NewMemberPage() {
     geographic_zone: 'abidjan',
     status: 'actif',
   });
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -120,7 +122,7 @@ export default function NewMemberPage() {
                     <SelectContent>
                       {categories?.map((c) => <SelectItem key={c.id} value={c.id}>{c.name} - {c.monthly_amount} FCFA</SelectItem>)}
                     </SelectContent>
-                  </Select>
+                </Select>
                 </div>
               </div>
 
@@ -165,12 +167,64 @@ export default function NewMemberPage() {
                 <Label htmlFor="notes">Notes</Label>
                 <Textarea id="notes" value={formData.notes || ''} onChange={(e) => updateField('notes', e.target.value)} />
               </div>
-
-              <Button type="submit" className="w-full btn-primary-gradient" disabled={createMember.isPending}>
-                {createMember.isPending ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Enregistrement...</> : <><Save className="mr-2 h-4 w-4" />Enregistrer</>}
-              </Button>
             </CardContent>
           </Card>
+
+          {/* Section Accès membre */}
+          <Card className="card-elevated">
+            <CardHeader>
+              <CardTitle>Accès membre</CardTitle>
+              <CardDescription>
+                Créez un compte pour permettre au membre de se connecter à l'application
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Alert>
+                <Info className="h-4 w-4" />
+                <AlertDescription>
+                  Si vous renseignez un email et un mot de passe, un compte sera créé automatiquement. 
+                  Le membre devra changer son mot de passe lors de sa première connexion.
+                </AlertDescription>
+              </Alert>
+
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input 
+                    id="email" 
+                    type="email" 
+                    value={formData.email || ''} 
+                    onChange={(e) => updateField('email', e.target.value)} 
+                    placeholder="membre@email.com"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="password">Mot de passe initial</Label>
+                  <div className="relative">
+                    <Input 
+                      id="password" 
+                      type={showPassword ? 'text' : 'password'} 
+                      value={formData.password || ''} 
+                      onChange={(e) => updateField('password', e.target.value)} 
+                      placeholder="••••••••"
+                      minLength={6}
+                    />
+                    <button
+                      type="button"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Button type="submit" className="w-full btn-primary-gradient" disabled={createMember.isPending}>
+            {createMember.isPending ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Enregistrement...</> : <><Save className="mr-2 h-4 w-4" />Enregistrer</>}
+          </Button>
         </form>
       </div>
     </AppLayout>

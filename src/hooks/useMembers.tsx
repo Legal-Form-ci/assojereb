@@ -20,6 +20,7 @@ export interface MemberFormData {
   status: MemberStatus;
   photo_url?: string;
   notes?: string;
+  password?: string; // Pour la création d'un compte utilisateur
 }
 
 export function useMembers() {
@@ -45,9 +46,50 @@ export function useMembers() {
 
   const createMember = useMutation({
     mutationFn: async (memberData: MemberFormData) => {
+      const { password, ...memberDataWithoutPassword } = memberData;
+      
+      // Si un email et mot de passe sont fournis, créer un compte utilisateur
+      let userId: string | null = null;
+      if (memberData.email && password) {
+        const { data: authData, error: authError } = await supabase.auth.signUp({
+          email: memberData.email,
+          password: password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/`,
+            data: {
+              full_name: `${memberData.first_name} ${memberData.last_name}`,
+            },
+          },
+        });
+        
+        if (authError) throw authError;
+        userId = authData.user?.id || null;
+        
+        // Créer le profil avec must_change_password = true
+        if (userId) {
+          await supabase.from('profiles').insert({
+            user_id: userId,
+            full_name: `${memberData.first_name} ${memberData.last_name}`,
+            phone: memberData.phone,
+            must_change_password: true,
+          });
+          
+          // Assigner le rôle membre
+          await supabase.from('user_roles').insert({
+            user_id: userId,
+            role: 'membre',
+            family_id: memberData.family_id,
+          });
+        }
+      }
+      
+      // Créer le membre avec le user_id si disponible
       const { data, error } = await supabase
         .from('members')
-        .insert(memberData as never)
+        .insert({
+          ...memberDataWithoutPassword,
+          user_id: userId,
+        } as never)
         .select()
         .single();
 

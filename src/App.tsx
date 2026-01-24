@@ -19,6 +19,7 @@ import Notifications from "./pages/Notifications";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
 import NewsManagement from "./pages/NewsManagement";
+import Profile from "./pages/Profile";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
@@ -70,6 +71,9 @@ const App = () => (
             } />
             <Route path="/actualites" element={
               <ProtectedRoute><NewsManagement /></ProtectedRoute>
+            } />
+            <Route path="/profil" element={
+              <ProtectedRoute><Profile /></ProtectedRoute>
             } />
             
             {/* Catch-all */}

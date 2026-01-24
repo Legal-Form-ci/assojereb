@@ -16,6 +16,7 @@ import {
   X,
   Star,
   Newspaper,
+  User,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
@@ -30,6 +31,7 @@ const navItems = [
   { icon: Newspaper, label: 'Actualités', href: '/actualites', adminOnly: true },
   { icon: Bell, label: 'Notifications', href: '/notifications' },
   { icon: FileText, label: 'Rapports', href: '/rapports' },
+  { icon: User, label: 'Mon profil', href: '/profil' },
   { icon: Settings, label: 'Paramètres', href: '/parametres', adminOnly: true },
 ];
 

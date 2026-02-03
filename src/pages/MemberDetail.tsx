@@ -2,6 +2,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { AppLayout } from '@/components/AppLayout';
 import { useMember } from '@/hooks/useMembers';
 import { useContributions } from '@/hooks/useContributions';
+import { MemberCard } from '@/components/MemberCard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -16,10 +17,19 @@ import {
   Calendar,
   Wallet,
   Plus,
-  Edit
+  Edit,
+  CreditCard
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { useState } from 'react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 
 export default function MemberDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -131,6 +141,20 @@ export default function MemberDetailPage() {
             </div>
           </div>
           <div className="flex gap-2">
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline">
+                  <CreditCard className="mr-2 h-4 w-4" />
+                  Carte membre
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Carte de membre</DialogTitle>
+                </DialogHeader>
+                <MemberCard member={member} />
+              </DialogContent>
+            </Dialog>
             <Button variant="outline" asChild>
               <Link to={`/cotisations/nouveau?member=${id}`}>
                 <Plus className="mr-2 h-4 w-4" />

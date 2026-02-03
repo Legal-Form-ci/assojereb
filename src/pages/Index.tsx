@@ -17,6 +17,7 @@ import {
 import { useNews, NEWS_CATEGORIES } from '@/hooks/useNews';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import logoAssojereb from '@/assets/logo-assojereb.png';
 
 const families = [
   'AKPRO', 'DJOMAN', 'KOFFI', 'KOUAME', 'KOUASSI', "N'GUESSAN"
@@ -50,10 +51,12 @@ export default function LandingPage() {
       <header className="sticky top-0 z-50 bg-background/95 backdrop-blur border-b border-border">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
-              <span className="font-bold text-primary-foreground">AJ</span>
-            </div>
-            <span className="font-serif text-xl font-bold">ASSOJEREB</span>
+            <img 
+              src={logoAssojereb} 
+              alt="Logo ASSOJEREB" 
+              className="w-12 h-12 rounded-full object-cover"
+            />
+            <span className="font-serif text-xl font-bold text-primary">ASSOJEREB</span>
           </Link>
           
           <nav className="flex items-center gap-4">
@@ -83,6 +86,13 @@ export default function LandingPage() {
         />
         <div className="container mx-auto px-4 py-20 lg:py-32 relative">
           <div className="max-w-3xl mx-auto text-center animate-fadeIn">
+            <div className="flex justify-center mb-6">
+              <img 
+                src={logoAssojereb} 
+                alt="Logo ASSOJEREB" 
+                className="w-32 h-32 rounded-full object-cover shadow-xl"
+              />
+            </div>
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6">
               <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
               Bienvenue chez les jeunes ressortissants
@@ -90,7 +100,7 @@ export default function LandingPage() {
             
             <h1 className="font-serif text-4xl lg:text-6xl font-bold text-foreground mb-6 leading-tight">
               Association des Jeunes Ressortissants
-              <span className="text-primary"> d'Ebilassokro</span>
+              <span className="text-primary"> de Brongonzué</span>
             </h1>
             
             <p className="text-lg lg:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
@@ -306,15 +316,17 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-3 gap-8 mb-8">
             <div>
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center">
-                  <span className="font-bold text-secondary-foreground">AJ</span>
-                </div>
+                <img 
+                  src={logoAssojereb} 
+                  alt="Logo ASSOJEREB" 
+                  className="w-12 h-12 rounded-full object-cover"
+                />
                 <div>
                   <span className="font-serif text-lg font-bold">ASSOJEREB</span>
                 </div>
               </div>
               <p className="text-background/60 text-sm">
-                Association des Jeunes Ressortissants d'Ebilassokro.<br />
+                Association des Jeunes Ressortissants de Brongonzué.<br />
                 Unis pour le développement de notre terroir.
               </p>
             </div>
@@ -331,7 +343,7 @@ export default function LandingPage() {
               <ul className="space-y-2 text-sm text-background/60">
                 <li>Email: contact@assojereb.ci</li>
                 <li>Tél: +225 XX XX XX XX</li>
-                <li>Ebilassokro, Côte d'Ivoire</li>
+                <li>Brongonzué, Côte d'Ivoire</li>
               </ul>
             </div>
           </div>

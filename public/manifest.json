@@ -1,0 +1,23 @@
+{
+  "name": "ASSOJEREB - Association des Jeunes Ressortissants de Brongonzué",
+  "short_name": "ASSOJEREB",
+  "description": "Application de gestion des membres et cotisations de l'ASSOJEREB",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1E90B8",
+  "icons": [
+    {
+      "src": "/logo-assojereb.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo-assojereb.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

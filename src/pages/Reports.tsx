@@ -54,11 +54,11 @@ export default function ReportsPage() {
     setGenerating('members-pdf');
     try {
       const html = generateMemberListPDF(filteredMembers, {
-        title: 'Liste des Membres ASSOJEREB',
+        title: 'Liste des Membres - ASSOJEREB Brongonzué',
         subtitle: 'Répertoire officiel des membres',
         filterInfo: getFilterDescription(),
       });
-      openPrintWindow(html, 'liste-membres-assojereb');
+      openPrintWindow(html, 'liste-membres-assojereb-brongonzue');
       toast.success('Document généré avec succès');
     } catch (error) {
       toast.error('Erreur lors de la génération');

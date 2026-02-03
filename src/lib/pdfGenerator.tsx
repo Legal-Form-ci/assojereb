@@ -14,6 +14,9 @@ interface PDFDocumentOptions {
   orientation?: 'portrait' | 'landscape';
 }
 
+// URL du logo pour les PDFs (utilise le chemin public)
+const LOGO_URL = '/logo-assojereb.png';
+
 export function generateMemberListPDF(
   members: Member[],
   options: PDFDocumentOptions & { filterInfo?: string }
@@ -54,7 +57,7 @@ export function generateMemberListPDF(
       align-items: center;
       justify-content: space-between;
       padding-bottom: 10px;
-      border-bottom: 2px solid #1B5E20;
+      border-bottom: 2px solid #1E90B8;
       margin-bottom: 15px;
     }
     .logo-section {
@@ -65,19 +68,13 @@ export function generateMemberListPDF(
     .logo {
       width: 50px;
       height: 50px;
-      background: linear-gradient(135deg, #1B5E20, #2E7D32);
       border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: bold;
-      font-size: 14pt;
+      object-fit: cover;
     }
     .org-name {
       font-size: 14pt;
       font-weight: bold;
-      color: #1B5E20;
+      color: #1E90B8;
     }
     .org-full-name {
       font-size: 8pt;
@@ -94,7 +91,7 @@ export function generateMemberListPDF(
       font-size: 16pt;
       font-weight: bold;
       text-align: center;
-      color: #1B5E20;
+      color: #1E90B8;
       margin-bottom: 5px;
     }
     .subtitle {
@@ -117,7 +114,7 @@ export function generateMemberListPDF(
       margin-bottom: 20px;
     }
     th {
-      background: linear-gradient(135deg, #1B5E20, #2E7D32);
+      background: linear-gradient(135deg, #1E90B8, #3AA8D0);
       color: white;
       padding: 8px 6px;
       text-align: left;
@@ -133,17 +130,17 @@ export function generateMemberListPDF(
       background: #fafafa;
     }
     tr:hover {
-      background: #f0f7f0;
+      background: #e8f4f8;
     }
     .status-actif {
-      color: #1B5E20;
+      color: #1E90B8;
       font-weight: 600;
     }
     .status-inactif {
       color: #666;
     }
     .status-sympathisant {
-      color: #1976D2;
+      color: #E8942F;
     }
     .footer {
       position: fixed;
@@ -159,7 +156,7 @@ export function generateMemberListPDF(
       background: white;
     }
     .summary {
-      background: linear-gradient(135deg, #FFC107, #FFD54F);
+      background: linear-gradient(135deg, #E8942F, #F5B04A);
       padding: 10px 15px;
       border-radius: 4px;
       margin-bottom: 15px;
@@ -176,7 +173,7 @@ export function generateMemberListPDF(
     }
     .summary-label {
       font-size: 8pt;
-      color: #666;
+      color: #333;
     }
     @media print {
       .page {
@@ -193,10 +190,10 @@ export function generateMemberListPDF(
   <div class="page">
     <div class="header">
       <div class="logo-section">
-        <div class="logo">AJ</div>
+        <img src="${LOGO_URL}" alt="Logo ASSOJEREB" class="logo" />
         <div>
           <div class="org-name">ASSOJEREB</div>
-          <div class="org-full-name">Association des Jeunes Ressortissants d'Ebilassokro</div>
+          <div class="org-full-name">Association des Jeunes Ressortissants de Brongonzué</div>
         </div>
       </div>
       <div class="doc-info">
@@ -256,7 +253,7 @@ export function generateMemberListPDF(
     </table>
     
     <div class="footer">
-      <span>ASSOJEREB - Document confidentiel</span>
+      <span>ASSOJEREB - Association des Jeunes Ressortissants de Brongonzué - Document confidentiel</span>
       <span>Page 1</span>
     </div>
   </div>
@@ -313,7 +310,7 @@ export function generateContributionsReportPDF(
       align-items: center;
       justify-content: space-between;
       padding-bottom: 10px;
-      border-bottom: 2px solid #1B5E20;
+      border-bottom: 2px solid #1E90B8;
       margin-bottom: 15px;
     }
     .logo-section {
@@ -324,25 +321,19 @@ export function generateContributionsReportPDF(
     .logo {
       width: 50px;
       height: 50px;
-      background: linear-gradient(135deg, #1B5E20, #2E7D32);
       border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: bold;
-      font-size: 14pt;
+      object-fit: cover;
     }
     .org-name {
       font-size: 14pt;
       font-weight: bold;
-      color: #1B5E20;
+      color: #1E90B8;
     }
     .title {
       font-size: 16pt;
       font-weight: bold;
       text-align: center;
-      color: #1B5E20;
+      color: #1E90B8;
       margin-bottom: 5px;
     }
     .subtitle {
@@ -357,7 +348,7 @@ export function generateContributionsReportPDF(
       margin-bottom: 20px;
     }
     th {
-      background: linear-gradient(135deg, #1B5E20, #2E7D32);
+      background: linear-gradient(135deg, #1E90B8, #3AA8D0);
       color: white;
       padding: 8px 6px;
       text-align: left;
@@ -374,14 +365,14 @@ export function generateContributionsReportPDF(
     }
     .amount {
       font-weight: 600;
-      color: #1B5E20;
+      color: #1E90B8;
     }
-    .status-payee { color: #1B5E20; }
-    .status-en_attente { color: #FFC107; }
+    .status-payee { color: #27AE60; }
+    .status-en_attente { color: #E8942F; }
     .status-en_retard { color: #D32F2F; }
     .status-annulee { color: #666; }
     .summary-box {
-      background: linear-gradient(135deg, #1B5E20, #2E7D32);
+      background: linear-gradient(135deg, #1E90B8, #3AA8D0);
       color: white;
       padding: 15px;
       border-radius: 8px;
@@ -418,9 +409,10 @@ export function generateContributionsReportPDF(
 <body>
   <div class="header">
     <div class="logo-section">
-      <div class="logo">AJ</div>
+      <img src="${LOGO_URL}" alt="Logo ASSOJEREB" class="logo" />
       <div>
         <div class="org-name">ASSOJEREB</div>
+        <div style="font-size: 8pt; color: #666">Brongonzué</div>
       </div>
     </div>
     <div>
@@ -499,18 +491,6 @@ export function openPrintWindow(htmlContent: string, filename: string) {
     // Delay print to allow styles to load
     setTimeout(() => {
       printWindow.print();
-    }, 250);
+    }, 500);
   }
-}
-
-export function downloadAsHTML(htmlContent: string, filename: string) {
-  const blob = new Blob([htmlContent], { type: 'text/html' });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = `${filename}.html`;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
 }

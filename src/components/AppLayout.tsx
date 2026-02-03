@@ -17,14 +17,17 @@ import {
   Star,
   Newspaper,
   User,
+  Building2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
+import logoAssojereb from '@/assets/logo-assojereb.png';
 
 const navItems = [
   { icon: LayoutDashboard, label: 'Tableau de bord', href: '/dashboard' },
   { icon: Users, label: 'Membres', href: '/membres' },
   { icon: UserPlus, label: 'Nouveau membre', href: '/membres/nouveau', adminOnly: true },
+  { icon: Building2, label: 'Maisons', href: '/maisons', adminOnly: true },
   { icon: Wallet, label: 'Cotisations', href: '/cotisations' },
   { icon: CreditCard, label: 'Enregistrer paiement', href: '/cotisations/nouveau', adminOnly: true },
   { icon: Star, label: 'Cotisations exceptionnelles', href: '/cotisations-exceptionnelles' },
@@ -83,12 +86,14 @@ export function AppLayout({ children }: AppLayoutProps) {
         {/* Logo */}
         <div className="flex items-center justify-between p-6 border-b border-sidebar-border">
           <Link to="/dashboard" className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-sidebar-primary flex items-center justify-center">
-              <span className="font-bold text-sidebar-primary-foreground">AJ</span>
-            </div>
+            <img 
+              src={logoAssojereb} 
+              alt="Logo ASSOJEREB" 
+              className="w-10 h-10 rounded-full object-cover"
+            />
             <div>
               <h1 className="font-serif text-lg font-bold text-sidebar-foreground">ASSOJEREB</h1>
-              <p className="text-xs text-sidebar-foreground/60">Gestion des membres</p>
+              <p className="text-xs text-sidebar-foreground/60">Brongonzué</p>
             </div>
           </Link>
           <button
@@ -170,9 +175,11 @@ export function AppLayout({ children }: AppLayoutProps) {
             <Menu className="h-6 w-6 text-foreground" />
           </button>
           <Link to="/dashboard" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-              <span className="text-sm font-bold text-primary-foreground">AJ</span>
-            </div>
+            <img 
+              src={logoAssojereb} 
+              alt="Logo ASSOJEREB" 
+              className="w-8 h-8 rounded-full object-cover"
+            />
             <span className="font-serif font-bold">ASSOJEREB</span>
           </Link>
           <div className="w-10" />

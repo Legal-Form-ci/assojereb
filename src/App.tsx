@@ -20,6 +20,8 @@ import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
 import NewsManagement from "./pages/NewsManagement";
 import Profile from "./pages/Profile";
+import HousesManagement from "./pages/HousesManagement";
+import MemberVerification from "./pages/MemberVerification";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
@@ -34,6 +36,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/verification/:id" element={<MemberVerification />} />
             
             {/* Protected Routes */}
             <Route path="/dashboard" element={
@@ -50,6 +53,9 @@ const App = () => (
             } />
             <Route path="/membres/:id/modifier" element={
               <ProtectedRoute><EditMember /></ProtectedRoute>
+            } />
+            <Route path="/maisons" element={
+              <ProtectedRoute><HousesManagement /></ProtectedRoute>
             } />
             <Route path="/cotisations" element={
               <ProtectedRoute><Contributions /></ProtectedRoute>

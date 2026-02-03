@@ -1,1 +1,7 @@
 project_id = "cpusewkfsoqrasjthetx"
+
+[functions.create-admin]
+verify_jwt = false
+
+[functions.contribution-reminders]
+verify_jwt = false

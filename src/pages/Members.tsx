@@ -71,7 +71,7 @@ export default function MembersPage() {
     setGenerating(true);
     try {
       const html = generateMemberListPDF(filteredMembers, {
-        title: 'Liste des Membres ASSOJEREB',
+        title: 'Liste des Membres - ASSOJEREB Brongonzué',
         subtitle: 'Répertoire officiel',
         filterInfo: getFilterDescription(),
       });

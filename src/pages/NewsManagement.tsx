@@ -3,21 +3,17 @@ import { AppLayout } from '@/components/AppLayout';
 import { useAuth } from '@/hooks/useAuth';
 import { useNews, NewsFormData, NEWS_CATEGORIES } from '@/hooks/useNews';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Plus, Newspaper, Edit, Trash2, Loader2, Eye, EyeOff } from 'lucide-react';
+import { Plus, Newspaper, Edit, Trash2, Eye, EyeOff } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { News } from '@/hooks/useNews';
+import { NewsEditorForm } from '@/components/news/NewsEditorForm';
 
 export default function NewsManagementPage() {
   const { isAdmin } = useAuth();
@@ -63,10 +59,15 @@ export default function NewsManagementPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    const submitData = {
+      ...formData,
+      // Include media_urls if available
+    };
+    
     if (editingItem) {
-      await updateNews.mutateAsync({ id: editingItem.id, ...formData });
+      await updateNews.mutateAsync({ id: editingItem.id, ...submitData });
     } else {
-      await createNews.mutateAsync(formData);
+      await createNews.mutateAsync(submitData);
     }
     
     setDialogOpen(false);
@@ -117,85 +118,20 @@ export default function NewsManagementPage() {
                 Nouvelle actualité
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+            <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle className="font-serif">
                   {editingItem ? 'Modifier l\'actualité' : 'Nouvelle actualité'}
                 </DialogTitle>
               </DialogHeader>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="title">Titre *</Label>
-                  <Input
-                    id="title"
-                    value={formData.title}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    placeholder="Titre de l'actualité"
-                    required
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="category">Catégorie *</Label>
-                  <Select 
-                    value={formData.category} 
-                    onValueChange={(v) => setFormData({ ...formData, category: v })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {NEWS_CATEGORIES.map((cat) => (
-                        <SelectItem key={cat.value} value={cat.value}>
-                          {cat.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="content">Contenu *</Label>
-                  <Textarea
-                    id="content"
-                    value={formData.content}
-                    onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                    placeholder="Contenu de l'actualité..."
-                    rows={6}
-                    required
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="image_url">URL de l'image (optionnel)</Label>
-                  <Input
-                    id="image_url"
-                    type="url"
-                    value={formData.image_url}
-                    onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                    placeholder="https://..."
-                  />
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <Switch
-                    id="is_published"
-                    checked={formData.is_published}
-                    onCheckedChange={(checked) => setFormData({ ...formData, is_published: checked })}
-                  />
-                  <Label htmlFor="is_published">Publier immédiatement</Label>
-                </div>
-
-                <DialogFooter>
-                  <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
-                    Annuler
-                  </Button>
-                  <Button type="submit" className="btn-primary-gradient" disabled={isPending}>
-                    {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    {editingItem ? 'Modifier' : 'Publier'}
-                  </Button>
-                </DialogFooter>
-              </form>
+              <NewsEditorForm
+                formData={formData}
+                onChange={setFormData}
+                onSubmit={handleSubmit}
+                onCancel={() => setDialogOpen(false)}
+                isPending={isPending}
+                isEditing={!!editingItem}
+              />
             </DialogContent>
           </Dialog>
         </div>

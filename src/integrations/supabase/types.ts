@@ -317,6 +317,7 @@ export type Database = {
           id: string
           image_url: string | null
           is_published: boolean
+          media_urls: Json | null
           published_at: string
           title: string
           updated_at: string
@@ -329,6 +330,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_published?: boolean
+          media_urls?: Json | null
           published_at?: string
           title: string
           updated_at?: string
@@ -341,6 +343,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_published?: boolean
+          media_urls?: Json | null
           published_at?: string
           title?: string
           updated_at?: string

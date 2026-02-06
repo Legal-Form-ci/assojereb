@@ -166,13 +166,14 @@ export default function LandingPage() {
           {newsLoading ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[...Array(3)].map((_, i) => (
-                <Card key={i} className="card-elevated animate-pulse">
-                  <CardContent className="p-6">
-                    <div className="h-6 bg-muted rounded w-20 mb-4" />
-                    <div className="h-5 bg-muted rounded w-full mb-2" />
+                <div key={i} className="animate-pulse">
+                  <div className="aspect-video bg-muted rounded-t-lg" />
+                  <div className="p-6 space-y-3">
+                    <div className="h-6 bg-muted rounded w-20" />
+                    <div className="h-5 bg-muted rounded w-full" />
                     <div className="h-4 bg-muted rounded w-3/4" />
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
               ))}
             </div>
           ) : news.length === 0 ? (
@@ -183,34 +184,51 @@ export default function LandingPage() {
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {news.slice(0, 6).map((item) => (
-                <Card key={item.id} className="card-elevated hover:shadow-lg transition-shadow">
-                  {item.image_url && (
-                    <div className="h-48 overflow-hidden rounded-t-lg">
-                      <img 
-                        src={item.image_url} 
-                        alt={item.title}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  )}
-                  <CardContent className="p-6">
-                    <div className="flex items-center gap-2 mb-3">
-                      <Badge className={`${getCategoryColor(item.category)} text-white border-0`}>
-                        {getCategoryLabel(item.category)}
-                      </Badge>
-                      <span className="text-sm text-muted-foreground">
-                        {format(new Date(item.published_at), 'dd MMM yyyy', { locale: fr })}
-                      </span>
-                    </div>
-                    <h3 className="font-serif text-lg font-semibold mb-2 line-clamp-2">
-                      {item.title}
-                    </h3>
-                    <p className="text-muted-foreground text-sm line-clamp-3">
-                      {item.content}
-                    </p>
-                  </CardContent>
-                </Card>
+                <Link 
+                  key={item.id} 
+                  to={`/actualites/${item.id}`}
+                  className="group"
+                >
+                  <Card className="overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border-l-4 border-b-4 border-l-secondary border-b-secondary border-r-4 border-t-4 border-r-primary border-t-primary bg-card h-full">
+                    {item.image_url && (
+                      <div className="aspect-video overflow-hidden">
+                        <img 
+                          src={item.image_url} 
+                          alt={item.title}
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        />
+                      </div>
+                    )}
+                    <CardContent className="p-6">
+                      <div className="flex items-center gap-2 mb-3">
+                        <Badge className={`${getCategoryColor(item.category)} text-white border-0`}>
+                          {getCategoryLabel(item.category)}
+                        </Badge>
+                        <span className="text-sm text-muted-foreground">
+                          {format(new Date(item.published_at), 'dd MMM yyyy', { locale: fr })}
+                        </span>
+                      </div>
+                      <h3 className="font-serif text-lg font-semibold mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                        {item.title}
+                      </h3>
+                      <p className="text-muted-foreground text-sm line-clamp-3">
+                        {item.content.replace(/[#*_]/g, '').substring(0, 150)}...
+                      </p>
+                    </CardContent>
+                  </Card>
+                </Link>
               ))}
+            </div>
+          )}
+          
+          {news.length > 6 && (
+            <div className="text-center mt-8">
+              <Button asChild variant="outline" size="lg">
+                <Link to="/actualites">
+                  Voir toutes les actualités
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
             </div>
           )}
         </div>

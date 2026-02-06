@@ -26,12 +26,9 @@ import logoAssojereb from '@/assets/logo-assojereb.png';
 const navItems = [
   { icon: LayoutDashboard, label: 'Tableau de bord', href: '/dashboard' },
   { icon: Users, label: 'Membres', href: '/membres' },
-  { icon: UserPlus, label: 'Nouveau membre', href: '/membres/nouveau', adminOnly: true },
   { icon: Building2, label: 'Maisons', href: '/maisons', adminOnly: true },
   { icon: Wallet, label: 'Cotisations', href: '/cotisations' },
-  { icon: CreditCard, label: 'Enregistrer paiement', href: '/cotisations/nouveau', adminOnly: true },
-  { icon: Star, label: 'Cotisations exceptionnelles', href: '/cotisations-exceptionnelles' },
-  { icon: Newspaper, label: 'Actualités', href: '/actualites', adminOnly: true },
+  { icon: Newspaper, label: 'Gestion actualités', href: '/gestion-actualites', adminOnly: true },
   { icon: Bell, label: 'Notifications', href: '/notifications' },
   { icon: FileText, label: 'Rapports', href: '/rapports' },
   { icon: User, label: 'Mon profil', href: '/profil' },

@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { AppLayout } from '@/components/AppLayout';
 import { useContributions } from '@/hooks/useContributions';
 import { useMembers } from '@/hooks/useMembers';
+import { useExceptionalContributions } from '@/hooks/useExceptionalContributions';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -10,16 +11,21 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Search, Plus, Wallet, Clock, CheckCircle, AlertCircle } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ContributionAnalysis } from '@/components/ContributionAnalysis';
+import { Search, Plus, Wallet, Clock, CheckCircle, AlertCircle, Star } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
 export default function ContributionsPage() {
+  const navigate = useNavigate();
   const { allContributions, isLoading, stats } = useContributions();
   const { members } = useMembers();
+  const { exceptionalContributions } = useExceptionalContributions();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [typeFilter, setTypeFilter] = useState<string>('all');
+  const [activeTab, setActiveTab] = useState('cotisations');
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('fr-FR', {
@@ -79,12 +85,16 @@ export default function ContributionsPage() {
             <h1 className="font-serif text-3xl font-bold">Cotisations</h1>
             <p className="text-muted-foreground">Gérez les cotisations des membres</p>
           </div>
-          <Button asChild className="btn-primary-gradient">
-            <Link to="/cotisations/nouveau">
+          <div className="flex gap-2">
+            <Button onClick={() => navigate('/cotisations-exceptionnelles')} variant="outline">
+              <Star className="mr-2 h-4 w-4" />
+              Exceptionnelles
+            </Button>
+            <Button onClick={() => navigate('/cotisations/nouveau')} className="btn-primary-gradient">
               <Plus className="mr-2 h-4 w-4" />
               Enregistrer paiement
-            </Link>
-          </Button>
+            </Button>
+          </div>
         </div>
 
         {/* Stats */}
@@ -238,6 +248,9 @@ export default function ContributionsPage() {
         <p className="text-sm text-muted-foreground">
           {filteredContributions.length} cotisation{filteredContributions.length > 1 ? 's' : ''} trouvée{filteredContributions.length > 1 ? 's' : ''}
         </p>
+
+        {/* AI Analysis Section */}
+        <ContributionAnalysis />
       </div>
     </AppLayout>
   );

@@ -1,5 +1,14 @@
 project_id = "cpusewkfsoqrasjthetx"
 
+[functions.ai-assistant]
+verify_jwt = false
+
+[functions.contribution-reminders]
+verify_jwt = false
+
+[functions.create-admin]
+verify_jwt = false
+
 [functions.create-admin]
 verify_jwt = false
 

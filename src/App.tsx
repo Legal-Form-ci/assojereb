@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
+import { AIChatbot } from "@/components/AIChatbot";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
@@ -19,6 +20,8 @@ import Notifications from "./pages/Notifications";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
 import NewsManagement from "./pages/NewsManagement";
+import NewsPage from "./pages/NewsPage";
+import NewsDetailPage from "./components/news/NewsDetailPage";
 import Profile from "./pages/Profile";
 import HousesManagement from "./pages/HousesManagement";
 import MemberVerification from "./pages/MemberVerification";
@@ -75,9 +78,11 @@ const App = () => (
             <Route path="/parametres" element={
               <ProtectedRoute><Settings /></ProtectedRoute>
             } />
-            <Route path="/actualites" element={
+            <Route path="/gestion-actualites" element={
               <ProtectedRoute><NewsManagement /></ProtectedRoute>
             } />
+            <Route path="/actualites" element={<NewsPage />} />
+            <Route path="/actualites/:id" element={<NewsDetailPage />} />
             <Route path="/profil" element={
               <ProtectedRoute><Profile /></ProtectedRoute>
             } />
@@ -85,6 +90,7 @@ const App = () => (
             {/* Catch-all */}
             <Route path="*" element={<NotFound />} />
           </Routes>
+          <AIChatbot />
         </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>

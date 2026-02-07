@@ -1,25 +1,14 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-
-export interface News {
-  id: string;
-  title: string;
-  content: string;
-  category: string;
-  image_url: string | null;
-  is_published: boolean;
-  published_at: string;
-  created_by: string | null;
-  created_at: string;
-  updated_at: string;
-}
+import { News } from '@/types/database';
 
 export interface NewsFormData {
   title: string;
   content: string;
   category: string;
   image_url?: string;
+  media_urls?: string[];
   is_published: boolean;
 }
 
@@ -62,7 +51,12 @@ export function useNews(onlyPublished = false) {
       const { data, error } = await supabase
         .from('news')
         .insert({
-          ...newsData,
+          title: newsData.title,
+          content: newsData.content,
+          category: newsData.category,
+          image_url: newsData.image_url,
+          media_urls: newsData.media_urls || [],
+          is_published: newsData.is_published,
           created_by: user?.id,
         })
         .select()
@@ -84,7 +78,14 @@ export function useNews(onlyPublished = false) {
     mutationFn: async ({ id, ...newsData }: NewsFormData & { id: string }) => {
       const { data, error } = await supabase
         .from('news')
-        .update(newsData)
+        .update({
+          title: newsData.title,
+          content: newsData.content,
+          category: newsData.category,
+          image_url: newsData.image_url,
+          media_urls: newsData.media_urls || [],
+          is_published: newsData.is_published,
+        })
         .eq('id', id)
         .select()
         .single();
@@ -126,4 +127,35 @@ export function useNews(onlyPublished = false) {
     updateNews,
     deleteNews,
   };
+}
+
+export function useNewsBySlug(slugOrId: string | undefined) {
+  return useQuery({
+    queryKey: ['news', 'detail', slugOrId],
+    queryFn: async () => {
+      if (!slugOrId) return null;
+
+      // Try by slug first, then by ID
+      let { data, error } = await supabase
+        .from('news')
+        .select('*')
+        .eq('slug', slugOrId)
+        .single();
+
+      if (error || !data) {
+        // Fallback to ID
+        const result = await supabase
+          .from('news')
+          .select('*')
+          .eq('id', slugOrId)
+          .single();
+        data = result.data;
+        error = result.error;
+      }
+
+      if (error) throw error;
+      return data as News;
+    },
+    enabled: !!slugOrId,
+  });
 }

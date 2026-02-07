@@ -18,6 +18,7 @@ import { useNews, NEWS_CATEGORIES } from '@/hooks/useNews';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import logoAssojereb from '@/assets/logo-assojereb.png';
+import { Footer } from '@/components/Footer';
 
 const families = [
   'AKPRO', 'DJOMAN', 'KOFFI', 'KOUAME', 'KOUASSI', "N'GUESSAN"
@@ -329,47 +330,7 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-foreground text-background py-12">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-3 gap-8 mb-8">
-            <div>
-              <div className="flex items-center gap-3 mb-4">
-                <img 
-                  src={logoAssojereb} 
-                  alt="Logo ASSOJEREB" 
-                  className="w-12 h-12 rounded-full object-cover"
-                />
-                <div>
-                  <span className="font-serif text-lg font-bold">ASSOJEREB</span>
-                </div>
-              </div>
-              <p className="text-background/60 text-sm">
-                Association des Jeunes Ressortissants de Brongonzué.<br />
-                Unis pour le développement de notre terroir.
-              </p>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Liens rapides</h4>
-              <ul className="space-y-2 text-sm text-background/60">
-                <li><a href="#actualites" className="hover:text-background transition-colors">Actualités</a></li>
-                <li><a href="#cotisations" className="hover:text-background transition-colors">Cotisations</a></li>
-                <li><Link to="/auth" className="hover:text-background transition-colors">Espace membre</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Contact</h4>
-              <ul className="space-y-2 text-sm text-background/60">
-                <li>Email: contact@assojereb.ci</li>
-                <li>Tél: +225 XX XX XX XX</li>
-                <li>Brongonzué, Côte d'Ivoire</li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-background/10 pt-8 text-center text-sm text-background/60">
-            © {new Date().getFullYear()} ASSOJEREB. Tous droits réservés.
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

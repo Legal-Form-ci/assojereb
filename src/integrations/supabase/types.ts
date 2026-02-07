@@ -319,6 +319,7 @@ export type Database = {
           is_published: boolean
           media_urls: Json | null
           published_at: string
+          slug: string | null
           title: string
           updated_at: string
         }
@@ -332,6 +333,7 @@ export type Database = {
           is_published?: boolean
           media_urls?: Json | null
           published_at?: string
+          slug?: string | null
           title: string
           updated_at?: string
         }
@@ -345,6 +347,7 @@ export type Database = {
           is_published?: boolean
           media_urls?: Json | null
           published_at?: string
+          slug?: string | null
           title?: string
           updated_at?: string
         }
@@ -600,6 +603,23 @@ export type Database = {
     }
     Functions: {
       generate_member_number: { Args: never; Returns: string }
+      generate_slug: { Args: { title: string }; Returns: string }
+      get_role_label: {
+        Args: { role_name: Database["public"]["Enums"]["app_role"] }
+        Returns: string
+      }
+      get_user_permissions: {
+        Args: { _user_id: string }
+        Returns: {
+          can_audit: boolean
+          can_manage_contributions: boolean
+          can_manage_members: boolean
+          can_manage_news: boolean
+          can_manage_roles: boolean
+          can_view_reports: boolean
+          family_id: string
+        }[]
+      }
       get_user_role: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"]
@@ -613,11 +633,25 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "admin" | "responsable" | "membre"
+      app_role:
+        | "admin"
+        | "responsable"
+        | "membre"
+        | "president"
+        | "president_adjoint"
+        | "tresorier"
+        | "tresorier_adjoint"
+        | "commissaire_comptes"
+        | "chef_famille"
       contribution_status: "payee" | "en_attente" | "en_retard" | "annulee"
       contribution_type: "mensuelle" | "exceptionnelle" | "adhesion"
       gender: "homme" | "femme"
-      geographic_zone: "abidjan" | "village" | "exterieur" | "diaspora"
+      geographic_zone:
+        | "abidjan"
+        | "village"
+        | "exterieur"
+        | "diaspora"
+        | "ville_interieur"
       member_status: "actif" | "inactif" | "sympathisant"
     }
     CompositeTypes: {
@@ -746,11 +780,27 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "responsable", "membre"],
+      app_role: [
+        "admin",
+        "responsable",
+        "membre",
+        "president",
+        "president_adjoint",
+        "tresorier",
+        "tresorier_adjoint",
+        "commissaire_comptes",
+        "chef_famille",
+      ],
       contribution_status: ["payee", "en_attente", "en_retard", "annulee"],
       contribution_type: ["mensuelle", "exceptionnelle", "adhesion"],
       gender: ["homme", "femme"],
-      geographic_zone: ["abidjan", "village", "exterieur", "diaspora"],
+      geographic_zone: [
+        "abidjan",
+        "village",
+        "exterieur",
+        "diaspora",
+        "ville_interieur",
+      ],
       member_status: ["actif", "inactif", "sympathisant"],
     },
   },

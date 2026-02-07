@@ -1,11 +1,31 @@
 // Types basés sur le schéma de la base de données
 
-export type AppRole = 'admin' | 'responsable' | 'membre';
+export type AppRole = 'admin' | 'president' | 'president_adjoint' | 'tresorier' | 'tresorier_adjoint' | 'commissaire_comptes' | 'chef_famille' | 'responsable' | 'membre';
 export type MemberStatus = 'actif' | 'inactif' | 'sympathisant';
 export type ContributionStatus = 'payee' | 'en_attente' | 'en_retard' | 'annulee';
 export type ContributionType = 'mensuelle' | 'exceptionnelle' | 'adhesion';
-export type GeographicZone = 'abidjan' | 'village' | 'exterieur' | 'diaspora';
+export type GeographicZone = 'abidjan' | 'village' | 'ville_interieur' | 'exterieur' | 'diaspora';
 export type Gender = 'homme' | 'femme';
+
+export const ROLE_LABELS: Record<AppRole, string> = {
+  admin: 'Super Administrateur',
+  president: 'Président',
+  president_adjoint: 'Président Adjoint',
+  tresorier: 'Trésorier',
+  tresorier_adjoint: 'Trésorier Adjoint',
+  commissaire_comptes: 'Commissaire aux Comptes',
+  chef_famille: 'Chef de Famille',
+  responsable: 'Responsable',
+  membre: 'Membre',
+};
+
+export const ZONE_LABELS: Record<GeographicZone, string> = {
+  abidjan: 'Abidjan',
+  village: 'Village',
+  ville_interieur: "Ville de l'intérieur",
+  exterieur: "Ville de l'intérieur", // Legacy mapping
+  diaspora: 'Diaspora',
+};
 
 export interface Family {
   id: string;
@@ -73,6 +93,7 @@ export interface Member {
   photo_url: string | null;
   notes: string | null;
   registered_by: string | null;
+  user_id: string | null;
   created_at: string;
   updated_at: string;
   // Relations
@@ -114,6 +135,21 @@ export interface Contribution {
   exceptional_contribution?: ExceptionalContribution;
 }
 
+export interface News {
+  id: string;
+  title: string;
+  slug: string | null;
+  content: string;
+  category: string;
+  image_url: string | null;
+  media_urls: string[] | null;
+  is_published: boolean;
+  published_at: string;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface Notification {
   id: string;
   member_id: string | null;
@@ -135,4 +171,15 @@ export interface DashboardStats {
   membersByFamily: { name: string; count: number }[];
   membersByZone: { zone: string; count: number }[];
   contributionsByMonth: { month: string; amount: number }[];
+}
+
+// Permissions type
+export interface UserPermissions {
+  can_manage_members: boolean;
+  can_manage_contributions: boolean;
+  can_manage_news: boolean;
+  can_view_reports: boolean;
+  can_manage_roles: boolean;
+  can_audit: boolean;
+  family_id: string | null;
 }

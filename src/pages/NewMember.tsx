@@ -138,14 +138,14 @@ export default function NewMemberPage() {
               </div>
 
               <div className="grid sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
+              <div className="space-y-2">
                   <Label>Zone géographique</Label>
                   <Select value={formData.geographic_zone} onValueChange={(v) => updateField('geographic_zone', v as GeographicZone)}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="abidjan">Abidjan</SelectItem>
                       <SelectItem value="village">Village</SelectItem>
-                      <SelectItem value="exterieur">Extérieur</SelectItem>
+                      <SelectItem value="ville_interieur">Ville de l'intérieur</SelectItem>
                       <SelectItem value="diaspora">Diaspora</SelectItem>
                     </SelectContent>
                   </Select>

@@ -12,7 +12,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Plus, Newspaper, Edit, Trash2, Eye, EyeOff } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { News } from '@/hooks/useNews';
+import { News } from '@/types/database';
 import { NewsEditorForm } from '@/components/news/NewsEditorForm';
 
 export default function NewsManagementPage() {

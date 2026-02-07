@@ -2,7 +2,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { AppLayout } from '@/components/AppLayout';
 import { useMember } from '@/hooks/useMembers';
 import { useContributions } from '@/hooks/useContributions';
-import { MemberCard } from '@/components/MemberCard';
+import { MemberCardPDF } from '@/components/MemberCardPDF';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -152,7 +152,7 @@ export default function MemberDetailPage() {
                 <DialogHeader>
                   <DialogTitle>Carte de membre</DialogTitle>
                 </DialogHeader>
-                <MemberCard member={member} />
+                <MemberCardPDF member={member} />
               </DialogContent>
             </Dialog>
             <Button variant="outline" asChild>

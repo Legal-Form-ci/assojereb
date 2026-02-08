@@ -25,6 +25,8 @@ import NewsDetailPage from "./components/news/NewsDetailPage";
 import Profile from "./pages/Profile";
 import HousesManagement from "./pages/HousesManagement";
 import MemberVerification from "./pages/MemberVerification";
+import RoleManagement from "./pages/RoleManagement";
+import UserGuide from "./pages/UserGuide";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
@@ -80,6 +82,12 @@ const App = () => (
             } />
             <Route path="/gestion-actualites" element={
               <ProtectedRoute><NewsManagement /></ProtectedRoute>
+            } />
+            <Route path="/gestion-roles" element={
+              <ProtectedRoute><RoleManagement /></ProtectedRoute>
+            } />
+            <Route path="/guide" element={
+              <ProtectedRoute><UserGuide /></ProtectedRoute>
             } />
             <Route path="/actualites" element={<NewsPage />} />
             <Route path="/actualites/:id" element={<NewsDetailPage />} />

@@ -2,10 +2,13 @@ import { AppLayout } from '@/components/AppLayout';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
 import { useFamilyDashboardStats } from '@/hooks/useFamilyDashboardStats';
 import { useAuth } from '@/hooks/useAuth';
+import { usePermissions } from '@/hooks/usePermissions';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
-import { Users, UserCheck, Wallet, Clock, TrendingUp, Home, Calendar } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Users, UserCheck, Wallet, Clock, TrendingUp, Home, Calendar, FileText, Shield, Eye, Newspaper, CreditCard } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import {
@@ -522,18 +525,216 @@ function MemberDashboard() {
   );
 }
 
+// Trésorier Dashboard
+function TresorierDashboard() {
+  const { data: stats, isLoading } = useDashboardStats();
+  
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('fr-FR', {
+      style: 'currency',
+      currency: 'XOF',
+      minimumFractionDigits: 0,
+    }).format(amount);
+  };
+
+  return (
+    <div className="space-y-6 animate-fadeIn">
+      <div className="flex items-center gap-3">
+        <div className="p-2.5 bg-secondary/10 rounded-xl">
+          <Wallet className="h-6 w-6 text-secondary" />
+        </div>
+        <div>
+          <h1 className="font-serif text-2xl font-bold">Tableau de bord Trésorerie</h1>
+          <p className="text-muted-foreground text-sm">Gérez les finances de l'association</p>
+        </div>
+      </div>
+
+      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card className="stat-card">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-xs font-medium text-muted-foreground">Revenus du mois</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {isLoading ? <Skeleton className="h-7 w-24" /> : (
+              <div className="text-2xl font-bold text-success">{formatCurrency(stats?.monthlyRevenue || 0)}</div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card className="stat-card">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-xs font-medium text-muted-foreground">En attente</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {isLoading ? <Skeleton className="h-7 w-16" /> : (
+              <div className="text-2xl font-bold text-warning">{stats?.pendingContributions || 0}</div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card className="stat-card">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-xs font-medium text-muted-foreground">Membres actifs</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {isLoading ? <Skeleton className="h-7 w-16" /> : (
+              <div className="text-2xl font-bold">{stats?.activeMembers || 0}</div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card className="stat-card">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-xs font-medium text-muted-foreground">Total membres</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {isLoading ? <Skeleton className="h-7 w-16" /> : (
+              <div className="text-2xl font-bold">{stats?.totalMembers || 0}</div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid sm:grid-cols-2 gap-4">
+        <Card className="card-elevated">
+          <CardHeader>
+            <CardTitle className="text-base flex items-center gap-2">
+              <CreditCard className="h-4 w-4" />
+              Actions rapides
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <Button asChild variant="outline" className="w-full justify-start">
+              <Link to="/cotisations/nouveau">
+                <Wallet className="h-4 w-4 mr-2" />
+                Nouvelle cotisation
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="w-full justify-start">
+              <Link to="/rapports">
+                <FileText className="h-4 w-4 mr-2" />
+                Voir les rapports
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="w-full justify-start">
+              <Link to="/membres">
+                <Users className="h-4 w-4 mr-2" />
+                Liste des membres
+              </Link>
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card className="card-elevated">
+          <CardHeader>
+            <CardTitle className="text-base">Rappel</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">
+              En tant que Trésorier, vous pouvez voir tous les membres et cotisations, 
+              enregistrer les paiements, et générer des rapports. 
+              Vous ne pouvez pas modifier les paramètres système.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+// Commissaire aux Comptes Dashboard
+function CommissaireDashboard() {
+  return (
+    <div className="space-y-6 animate-fadeIn">
+      <div className="flex items-center gap-3">
+        <div className="p-2.5 bg-info/10 rounded-xl">
+          <Eye className="h-6 w-6 text-info" />
+        </div>
+        <div>
+          <h1 className="font-serif text-2xl font-bold">Tableau de bord Audit</h1>
+          <p className="text-muted-foreground text-sm">Lecture seule - Contrôle des comptes</p>
+        </div>
+      </div>
+
+      <Card className="border-l-4 border-l-info">
+        <CardContent className="py-4">
+          <div className="flex gap-3">
+            <Eye className="h-5 w-5 text-info shrink-0" />
+            <div>
+              <p className="font-medium">Mode lecture seule</p>
+              <p className="text-sm text-muted-foreground">
+                Vous avez un accès en consultation uniquement pour vérifier les comptes et les cotisations.
+                Aucune modification n'est autorisée.
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="grid sm:grid-cols-2 gap-4">
+        <Card className="card-elevated">
+          <CardHeader>
+            <CardTitle className="text-base flex items-center gap-2">
+              <FileText className="h-4 w-4" />
+              Consulter
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <Button asChild variant="outline" className="w-full justify-start">
+              <Link to="/rapports">
+                <FileText className="h-4 w-4 mr-2" />
+                Rapports financiers
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="w-full justify-start">
+              <Link to="/cotisations">
+                <Wallet className="h-4 w-4 mr-2" />
+                Historique des cotisations
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="w-full justify-start">
+              <Link to="/membres">
+                <Users className="h-4 w-4 mr-2" />
+                Liste des membres
+              </Link>
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card className="card-elevated bg-muted/30">
+          <CardHeader>
+            <CardTitle className="text-base">Votre mission</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              <li>• Vérifier la régularité des cotisations</li>
+              <li>• Contrôler les comptes de l'association</li>
+              <li>• Préparer le rapport d'audit annuel</li>
+              <li>• Signaler les anomalies au bureau</li>
+            </ul>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
 export default function Dashboard() {
   const { userRole, isAdmin, isResponsable } = useAuth();
+  const { isTresorier, isCommissaire, isChefFamille, isPresident } = usePermissions();
+
+  const renderDashboard = () => {
+    if (isAdmin) return <AdminDashboard />;
+    if (isPresident) return <AdminDashboard />;
+    if (isTresorier) return <TresorierDashboard />;
+    if (isCommissaire) return <CommissaireDashboard />;
+    if (isChefFamille || isResponsable) return <FamilyDashboard />;
+    return <MemberDashboard />;
+  };
 
   return (
     <AppLayout>
-      {isAdmin ? (
-        <AdminDashboard />
-      ) : isResponsable ? (
-        <FamilyDashboard />
-      ) : (
-        <MemberDashboard />
-      )}
+      {renderDashboard()}
     </AppLayout>
   );
 }

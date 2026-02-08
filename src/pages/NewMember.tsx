@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppLayout } from '@/components/AppLayout';
 import { useMembers, MemberFormData } from '@/hooks/useMembers';
@@ -9,9 +9,11 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Loader2, ArrowLeft, Save, Eye, EyeOff, Info } from 'lucide-react';
+import { Loader2, ArrowLeft, Save, Eye, EyeOff, Info, Upload, User, X } from 'lucide-react';
 import { Gender, GeographicZone, MemberStatus } from '@/types/database';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 export default function NewMemberPage() {
   const navigate = useNavigate();
@@ -26,6 +28,66 @@ export default function NewMemberPage() {
     status: 'actif',
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast.error('Veuillez sélectionner une image');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('La photo ne doit pas dépasser 5 Mo');
+      return;
+    }
+
+    setPhotoFile(file);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPhotoPreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const removePhoto = () => {
+    setPhotoFile(null);
+    setPhotoPreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const uploadPhoto = async (): Promise<string | null> => {
+    if (!photoFile) return null;
+    
+    setUploadingPhoto(true);
+    try {
+      const fileName = `members/${Date.now()}-${Math.random().toString(36).substring(7)}-${photoFile.name}`;
+      const { data, error } = await supabase.storage
+        .from('news-media')
+        .upload(fileName, photoFile);
+      
+      if (error) throw error;
+      
+      const { data: urlData } = supabase.storage
+        .from('news-media')
+        .getPublicUrl(data.path);
+      
+      return urlData.publicUrl;
+    } catch (error) {
+      console.error('Photo upload error:', error);
+      toast.error('Erreur lors du téléchargement de la photo');
+      return null;
+    } finally {
+      setUploadingPhoto(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,13 +96,25 @@ export default function NewMemberPage() {
       return;
     }
 
-    await createMember.mutateAsync(formData as MemberFormData);
+    // Upload photo first if exists
+    let photoUrl = null;
+    if (photoFile) {
+      photoUrl = await uploadPhoto();
+    }
+
+    await createMember.mutateAsync({
+      ...formData,
+      photo_url: photoUrl,
+    } as MemberFormData);
+    
     navigate('/membres');
   };
 
   const updateField = (field: keyof MemberFormData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
+
+  const isPending = createMember.isPending || uploadingPhoto;
 
   return (
     <AppLayout>
@@ -55,7 +129,60 @@ export default function NewMemberPage() {
           </div>
         </div>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Photo Section */}
+          <Card className="card-elevated">
+            <CardHeader>
+              <CardTitle>Photo du membre</CardTitle>
+              <CardDescription>
+                La photo sera utilisée pour la carte de membre
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center gap-6">
+                <div 
+                  className="relative w-32 h-32 rounded-xl border-2 border-dashed border-border hover:border-primary transition-colors cursor-pointer overflow-hidden bg-muted/50"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  {photoPreview ? (
+                    <>
+                      <img src={photoPreview} alt="Preview" className="w-full h-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removePhoto();
+                        }}
+                        className="absolute top-1 right-1 p-1 bg-destructive text-destructive-foreground rounded-full"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </>
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center gap-2">
+                      <User className="h-10 w-10 text-muted-foreground/50" />
+                      <span className="text-xs text-muted-foreground">Cliquez pour ajouter</span>
+                    </div>
+                  )}
+                </div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handlePhotoSelect}
+                  className="hidden"
+                />
+                <div className="flex-1">
+                  <p className="text-sm text-muted-foreground">
+                    Formats acceptés : JPG, PNG, GIF<br />
+                    Taille maximale : 5 Mo<br />
+                    Recommandé : Photo d'identité récente
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           <Card className="card-elevated">
             <CardHeader>
               <CardTitle>Informations personnelles</CardTitle>
@@ -164,6 +291,11 @@ export default function NewMemberPage() {
               </div>
 
               <div className="space-y-2">
+                <Label htmlFor="address">Adresse</Label>
+                <Textarea id="address" value={formData.address || ''} onChange={(e) => updateField('address', e.target.value)} placeholder="Adresse complète" />
+              </div>
+
+              <div className="space-y-2">
                 <Label htmlFor="notes">Notes</Label>
                 <Textarea id="notes" value={formData.notes || ''} onChange={(e) => updateField('notes', e.target.value)} />
               </div>
@@ -222,8 +354,8 @@ export default function NewMemberPage() {
             </CardContent>
           </Card>
 
-          <Button type="submit" className="w-full btn-primary-gradient" disabled={createMember.isPending}>
-            {createMember.isPending ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Enregistrement...</> : <><Save className="mr-2 h-4 w-4" />Enregistrer</>}
+          <Button type="submit" className="w-full btn-primary-gradient" disabled={isPending}>
+            {isPending ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{uploadingPhoto ? 'Téléchargement photo...' : 'Enregistrement...'}</> : <><Save className="mr-2 h-4 w-4" />Enregistrer</>}
           </Button>
         </form>
       </div>

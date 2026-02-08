@@ -1,16 +1,16 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent } from '@/components/ui/card';
 import { DialogFooter } from '@/components/ui/dialog';
-import { Loader2, Sparkles, Upload, X, Image, Video } from 'lucide-react';
+import { Loader2, Sparkles, Upload, X, Video, Wand2 } from 'lucide-react';
 import { NEWS_CATEGORIES, NewsFormData } from '@/hooks/useNews';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { RichTextEditor } from '@/components/editor/RichTextEditor';
 
 interface NewsEditorFormProps {
   formData: NewsFormData;
@@ -28,7 +28,7 @@ export function NewsEditorForm({ formData, onChange, onSubmit, onCancel, isPendi
   const [uploadingMedia, setUploadingMedia] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleEnhanceWithAI = async () => {
+  const handleAutoGenerate = async () => {
     if (!formData.content.trim()) {
       toast.error('Veuillez saisir du contenu à enrichir');
       return;
@@ -43,8 +43,8 @@ export function NewsEditorForm({ formData, onChange, onSubmit, onCancel, isPendi
           'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
         body: JSON.stringify({
-          type: 'news-enhance',
-          messages: [{ role: 'user', content: `Enrichis et structure professionnellement ce contenu d'actualité:\n\n${formData.content}` }],
+          type: 'news-auto-generate',
+          messages: [{ role: 'user', content: formData.content }],
         }),
       });
 
@@ -52,7 +52,7 @@ export function NewsEditorForm({ formData, onChange, onSubmit, onCancel, isPendi
 
       const reader = resp.body.getReader();
       const decoder = new TextDecoder();
-      let enhancedContent = '';
+      let fullResponse = '';
       let buffer = '';
 
       while (true) {
@@ -76,17 +76,41 @@ export function NewsEditorForm({ formData, onChange, onSubmit, onCancel, isPendi
             const parsed = JSON.parse(jsonStr);
             const content = parsed.choices?.[0]?.delta?.content;
             if (content) {
-              enhancedContent += content;
-              onChange({ ...formData, content: enhancedContent });
+              fullResponse += content;
             }
           } catch {}
         }
       }
 
-      toast.success('Contenu enrichi avec succès !');
+      // Parse the AI response to extract structured data
+      try {
+        // Try to parse as JSON first
+        const jsonMatch = fullResponse.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          const aiData = JSON.parse(jsonMatch[0]);
+          
+          // Update form with AI suggestions
+          onChange({
+            ...formData,
+            title: aiData.title || formData.title,
+            content: aiData.content || formData.content,
+            category: aiData.category || formData.category,
+          });
+          
+          toast.success('Contenu généré avec succès !');
+        } else {
+          // If not JSON, use the response as enriched content
+          onChange({ ...formData, content: fullResponse });
+          toast.success('Contenu enrichi avec succès !');
+        }
+      } catch {
+        // Fallback: use as enriched content
+        onChange({ ...formData, content: fullResponse });
+        toast.success('Contenu enrichi !');
+      }
     } catch (error) {
       console.error('AI enhancement error:', error);
-      toast.error('Erreur lors de l\'enrichissement IA');
+      toast.error('Erreur lors de la génération IA');
     } finally {
       setIsEnhancing(false);
     }
@@ -99,7 +123,7 @@ export function NewsEditorForm({ formData, onChange, onSubmit, onCancel, isPendi
     for (const file of files) {
       const isImage = file.type.startsWith('image/');
       const isVideo = file.type.startsWith('video/');
-      const maxSize = isVideo ? 500 * 1024 * 1024 : 20 * 1024 * 1024; // 500MB video, 20MB image
+      const maxSize = isVideo ? 500 * 1024 * 1024 : 20 * 1024 * 1024;
       
       if (!isImage && !isVideo) {
         toast.error(`${file.name}: Type de fichier non supporté`);
@@ -116,7 +140,6 @@ export function NewsEditorForm({ formData, onChange, onSubmit, onCancel, isPendi
     
     setMediaFiles(prev => [...prev, ...validFiles]);
     
-    // Create previews
     validFiles.forEach(file => {
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -169,12 +192,10 @@ export function NewsEditorForm({ formData, onChange, onSubmit, onCancel, isPendi
         image_url: uploadedUrls[0] || formData.image_url,
       };
       
-      // Store media_urls in the form data (will be handled by parent)
       (updatedFormData as any).media_urls = uploadedUrls;
       
       onChange(updatedFormData);
       
-      // Small delay to ensure state is updated
       setTimeout(() => onSubmit(e), 100);
     } catch (error) {
       console.error('Upload error:', error);
@@ -184,6 +205,33 @@ export function NewsEditorForm({ formData, onChange, onSubmit, onCancel, isPendi
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {/* AI Generate Button - Prominent */}
+      <Card className="border-2 border-dashed border-secondary/50 bg-secondary/5">
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex-1">
+              <p className="font-medium text-sm">Génération automatique IA</p>
+              <p className="text-xs text-muted-foreground">
+                Écrivez un texte brut dans le contenu, puis cliquez sur Générer. L'IA va structurer, enrichir et remplir automatiquement tous les champs.
+              </p>
+            </div>
+            <Button
+              type="button"
+              onClick={handleAutoGenerate}
+              disabled={isEnhancing || !formData.content.trim()}
+              className="btn-gold-gradient gap-2 shrink-0"
+            >
+              {isEnhancing ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Wand2 className="h-4 w-4" />
+              )}
+              Générer
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
       <div className="space-y-2">
         <Label htmlFor="title">Titre *</Label>
         <Input
@@ -192,6 +240,7 @@ export function NewsEditorForm({ formData, onChange, onSubmit, onCancel, isPendi
           onChange={(e) => onChange({ ...formData, title: e.target.value })}
           placeholder="Titre de l'actualité"
           required
+          className="font-semibold"
         />
       </div>
 
@@ -215,36 +264,15 @@ export function NewsEditorForm({ formData, onChange, onSubmit, onCancel, isPendi
       </div>
 
       <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <Label htmlFor="content">Contenu *</Label>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={handleEnhanceWithAI}
-            disabled={isEnhancing || !formData.content.trim()}
-            className="gap-2"
-          >
-            {isEnhancing ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Sparkles className="h-4 w-4 text-secondary" />
-            )}
-            Générer avec IA
-          </Button>
-        </div>
-        <Textarea
-          id="content"
-          value={formData.content}
-          onChange={(e) => onChange({ ...formData, content: e.target.value })}
-          placeholder="Écrivez votre contenu ici... L'IA peut l'enrichir et le structurer professionnellement."
-          rows={10}
-          required
-          className="font-mono text-sm"
-        />
-        <p className="text-xs text-muted-foreground">
-          Supporte le Markdown: **gras**, *italique*, ## Titre, - liste
+        <Label htmlFor="content">Contenu *</Label>
+        <p className="text-xs text-muted-foreground mb-2">
+          Écrivez votre texte brut ici, puis utilisez "Générer" pour le structurer automatiquement, ou formatez-le manuellement avec la barre d'outils.
         </p>
+        <RichTextEditor
+          content={formData.content}
+          onChange={(html) => onChange({ ...formData, content: html })}
+          placeholder="Écrivez votre contenu ici..."
+        />
       </div>
 
       {/* Media Upload */}
@@ -270,7 +298,6 @@ export function NewsEditorForm({ formData, onChange, onSubmit, onCancel, isPendi
           </CardContent>
         </Card>
         
-        {/* Media Previews */}
         {mediaPreviews.length > 0 && (
           <div className="grid grid-cols-3 gap-2 mt-2">
             {mediaPreviews.map((preview, index) => (

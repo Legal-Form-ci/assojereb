@@ -1,5 +1,6 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { usePermissions } from '@/hooks/usePermissions';
 import { cn } from '@/lib/utils';
 import {
   LayoutDashboard,
@@ -10,28 +11,37 @@ import {
   Settings,
   LogOut,
   Home,
-  CreditCard,
-  UserPlus,
   Menu,
   X,
-  Star,
   Newspaper,
   User,
   Building2,
+  Shield,
+  BookOpen,
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import logoAssojereb from '@/assets/logo-assojereb.png';
+import { Footer } from './Footer';
 
-const navItems = [
+interface NavItem {
+  icon: typeof LayoutDashboard;
+  label: string;
+  href: string;
+  adminOnly?: boolean;
+  permission?: keyof ReturnType<typeof usePermissions>['permissions'];
+}
+
+const navItems: NavItem[] = [
   { icon: LayoutDashboard, label: 'Tableau de bord', href: '/dashboard' },
   { icon: Users, label: 'Membres', href: '/membres' },
   { icon: Building2, label: 'Maisons', href: '/maisons', adminOnly: true },
   { icon: Wallet, label: 'Cotisations', href: '/cotisations' },
-  { icon: Newspaper, label: 'Gestion actualités', href: '/gestion-actualites', adminOnly: true },
+  { icon: Newspaper, label: 'Actualités', href: '/gestion-actualites', permission: 'can_manage_news' },
+  { icon: Shield, label: 'Gestion des rôles', href: '/gestion-roles', adminOnly: true },
   { icon: Bell, label: 'Notifications', href: '/notifications' },
-  { icon: FileText, label: 'Rapports', href: '/rapports' },
+  { icon: FileText, label: 'Rapports', href: '/rapports', permission: 'can_view_reports' },
   { icon: User, label: 'Mon profil', href: '/profil' },
+  { icon: BookOpen, label: 'Guide', href: '/guide' },
   { icon: Settings, label: 'Paramètres', href: '/parametres', adminOnly: true },
 ];
 
@@ -41,6 +51,7 @@ interface AppLayoutProps {
 
 export function AppLayout({ children }: AppLayoutProps) {
   const { user, signOut, isAdmin, userRole } = useAuth();
+  const { roleLabel, permissions } = usePermissions();
   const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -50,18 +61,11 @@ export function AppLayout({ children }: AppLayoutProps) {
     navigate('/');
   };
 
-  const filteredNavItems = navItems.filter(item => !item.adminOnly || isAdmin);
-
-  const getRoleBadge = () => {
-    switch (userRole) {
-      case 'admin':
-        return 'Administrateur';
-      case 'responsable':
-        return 'Responsable';
-      default:
-        return 'Membre';
-    }
-  };
+  const filteredNavItems = navItems.filter(item => {
+    if (item.adminOnly && !isAdmin) return false;
+    if (item.permission && !permissions[item.permission]) return false;
+    return true;
+  });
 
   return (
     <div className="min-h-screen bg-background flex">
@@ -76,52 +80,52 @@ export function AppLayout({ children }: AppLayoutProps) {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed lg:static inset-y-0 left-0 z-50 w-72 bg-sidebar flex flex-col transition-transform duration-300 lg:translate-x-0",
+          "fixed lg:static inset-y-0 left-0 z-50 w-64 bg-sidebar flex flex-col transition-transform duration-300 lg:translate-x-0",
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        {/* Logo */}
-        <div className="flex items-center justify-between p-6 border-b border-sidebar-border">
-          <Link to="/dashboard" className="flex items-center gap-3">
+        {/* Logo - More compact */}
+        <div className="flex items-center justify-between p-4 border-b border-sidebar-border">
+          <Link to="/dashboard" className="flex items-center gap-2">
             <img 
               src={logoAssojereb} 
               alt="Logo ASSOJEREB" 
-              className="w-10 h-10 rounded-full object-cover"
+              className="w-9 h-9 rounded-full object-cover"
             />
             <div>
-              <h1 className="font-serif text-lg font-bold text-sidebar-foreground">ASSOJEREB</h1>
-              <p className="text-xs text-sidebar-foreground/60">Brongonzué</p>
+              <h1 className="font-serif text-base font-bold text-sidebar-foreground leading-tight">ASSOJEREB</h1>
+              <p className="text-[10px] text-sidebar-foreground/60">Brongonzué</p>
             </div>
           </Link>
           <button
             className="lg:hidden text-sidebar-foreground"
             onClick={() => setSidebarOpen(false)}
           >
-            <X className="h-6 w-6" />
+            <X className="h-5 w-5" />
           </button>
         </div>
 
-        {/* User info */}
-        <div className="p-4 border-b border-sidebar-border">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-sidebar-accent flex items-center justify-center">
-              <span className="text-sm font-medium text-sidebar-foreground">
+        {/* User info - More compact */}
+        <div className="p-3 border-b border-sidebar-border">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-sidebar-accent flex items-center justify-center shrink-0">
+              <span className="text-xs font-medium text-sidebar-foreground">
                 {user?.email?.charAt(0).toUpperCase()}
               </span>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-sidebar-foreground truncate">
+              <p className="text-xs font-medium text-sidebar-foreground truncate">
                 {user?.email}
               </p>
-              <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-sidebar-primary/20 text-sidebar-primary">
-                {getRoleBadge()}
+              <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-sidebar-primary/20 text-sidebar-primary">
+                {roleLabel}
               </span>
             </div>
           </div>
         </div>
 
-        {/* Navigation */}
-        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+        {/* Navigation - Tighter spacing */}
+        <nav className="flex-1 p-2 space-y-0.5 overflow-y-auto">
           {filteredNavItems.map((item) => {
             const isActive = location.pathname === item.href;
             return (
@@ -130,32 +134,32 @@ export function AppLayout({ children }: AppLayoutProps) {
                 to={item.href}
                 onClick={() => setSidebarOpen(false)}
                 className={cn(
-                  "sidebar-item",
-                  isActive && "sidebar-item-active"
+                  "flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-foreground transition-all duration-200",
+                  isActive && "bg-sidebar-accent text-sidebar-foreground font-medium"
                 )}
               >
-                <item.icon className="h-5 w-5" />
-                <span>{item.label}</span>
+                <item.icon className="h-4 w-4 shrink-0" />
+                <span className="truncate">{item.label}</span>
               </Link>
             );
           })}
         </nav>
 
         {/* Footer */}
-        <div className="p-4 border-t border-sidebar-border space-y-2">
+        <div className="p-2 border-t border-sidebar-border space-y-0.5">
           <Link
             to="/"
-            className="sidebar-item"
+            className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-foreground transition-all"
             onClick={() => setSidebarOpen(false)}
           >
-            <Home className="h-5 w-5" />
+            <Home className="h-4 w-4" />
             <span>Accueil</span>
           </Link>
           <button
             onClick={handleSignOut}
-            className="sidebar-item w-full text-left text-destructive"
+            className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm w-full text-left text-destructive hover:bg-destructive/10 transition-all"
           >
-            <LogOut className="h-5 w-5" />
+            <LogOut className="h-4 w-4" />
             <span>Déconnexion</span>
           </button>
         </div>
@@ -163,29 +167,32 @@ export function AppLayout({ children }: AppLayoutProps) {
 
       {/* Main content */}
       <div className="flex-1 flex flex-col min-h-screen">
-        {/* Mobile header */}
-        <header className="lg:hidden sticky top-0 z-30 bg-background border-b border-border px-4 py-3 flex items-center justify-between">
+        {/* Mobile header - More compact */}
+        <header className="lg:hidden sticky top-0 z-30 bg-background border-b border-border px-3 py-2 flex items-center justify-between">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="p-2 -ml-2"
+            className="p-1.5 -ml-1"
           >
-            <Menu className="h-6 w-6 text-foreground" />
+            <Menu className="h-5 w-5 text-foreground" />
           </button>
           <Link to="/dashboard" className="flex items-center gap-2">
             <img 
               src={logoAssojereb} 
               alt="Logo ASSOJEREB" 
-              className="w-8 h-8 rounded-full object-cover"
+              className="w-7 h-7 rounded-full object-cover"
             />
-            <span className="font-serif font-bold">ASSOJEREB</span>
+            <span className="font-serif font-bold text-sm">ASSOJEREB</span>
           </Link>
-          <div className="w-10" />
+          <div className="w-8" />
         </header>
 
         {/* Page content */}
-        <main className="flex-1 p-4 lg:p-8 overflow-x-hidden">
+        <main className="flex-1 p-3 lg:p-6 overflow-x-hidden">
           {children}
         </main>
+
+        {/* Footer */}
+        <Footer />
       </div>
     </div>
   );

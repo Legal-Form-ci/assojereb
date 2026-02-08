@@ -21,7 +21,7 @@ import logoAssojereb from '@/assets/logo-assojereb.png';
 import { Footer } from '@/components/Footer';
 
 const families = [
-  'AKPRO', 'DJOMAN', 'KOFFI', 'KOUAME', 'KOUASSI', "N'GUESSAN"
+  'DJELA OSSOU', 'ZOKOUAKOU', 'YAO GNANNI', 'AHOUMMOI BLE OSSOU', 'HOUMBOUANOU', "TOUA ZAMME"
 ];
 
 const contributionCategories = [

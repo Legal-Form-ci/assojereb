@@ -184,7 +184,7 @@ export default function HousesManagement() {
                     id="name"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    placeholder="Ex: Maison AKPRO 1"
+                    placeholder="Ex: Maison DJELA OSSOU 1"
                   />
                 </div>
                 <div className="space-y-2">

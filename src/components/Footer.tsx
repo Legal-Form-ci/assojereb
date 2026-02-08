@@ -86,7 +86,7 @@ export function Footer() {
               rel="noopener noreferrer"
               className="flex items-center gap-1 hover:text-secondary transition-colors"
             >
-              Plateforme développée par Inocent KOFFI
+              Plateforme développée par Inocent YAO GNANNI
               <ExternalLink className="h-3 w-3" />
             </a>
           </div>

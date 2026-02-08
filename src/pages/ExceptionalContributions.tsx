@@ -128,7 +128,7 @@ export default function ExceptionalContributionsPage() {
                     id="title"
                     value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    placeholder="Ex: Décès de M. KOUASSI Jean"
+                    placeholder="Ex: Décès de M. HOUMBOUANOU Jean"
                     required
                   />
                 </div>

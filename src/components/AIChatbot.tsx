@@ -3,8 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { MessageCircle, X, Send, Bot, User, Loader2 } from 'lucide-react';
-import ReactMarkdown from 'react-markdown';
+import { MessageCircle, X, Send, Bot, User, Loader2, Sparkles } from 'lucide-react';
 
 type Message = {
   role: 'user' | 'assistant';
@@ -14,7 +13,7 @@ type Message = {
 export function AIChatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'assistant', content: 'Bonjour ! Je suis l\'assistant virtuel de l\'ASSOJEREB. Comment puis-je vous aider aujourd\'hui ?' }
+    { role: 'assistant', content: '👋 Bonjour ! Je suis l\'assistant intelligent de l\'ASSOJEREB.\n\nJe peux vous aider avec :\n- 📋 Informations sur l\'association\n- 👥 Questions sur les membres\n- 💰 Cotisations et paiements\n- 📅 Événements à venir\n\nQue puis-je faire pour vous ?' }
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -53,7 +52,10 @@ export function AIChatbot() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
-        body: JSON.stringify({ messages: [...messages, userMessage] }),
+        body: JSON.stringify({ 
+          messages: [...messages, userMessage],
+          type: 'chat-with-context'
+        }),
       });
 
       if (!resp.ok || !resp.body) {
@@ -96,68 +98,89 @@ export function AIChatbot() {
     }
   };
 
+  // Simple markdown-like formatting
+  const formatContent = (text: string) => {
+    return text
+      .split('\n')
+      .map((line, i) => {
+        // Handle bold
+        line = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        // Handle italic
+        line = line.replace(/\*(.*?)\*/g, '<em>$1</em>');
+        // Handle bullet points
+        if (line.startsWith('- ')) {
+          return `<li class="ml-4">${line.slice(2)}</li>`;
+        }
+        return line ? `<p>${line}</p>` : '<br/>';
+      })
+      .join('');
+  };
+
   return (
     <>
       {/* Floating Button */}
       <Button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full shadow-lg btn-primary-gradient"
+        className="fixed bottom-4 right-4 z-50 h-12 w-12 rounded-full shadow-lg btn-primary-gradient"
         size="icon"
       >
-        {isOpen ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
+        {isOpen ? <X className="h-5 w-5" /> : <MessageCircle className="h-5 w-5" />}
       </Button>
 
       {/* Chat Window */}
       {isOpen && (
-        <Card className="fixed bottom-24 right-6 z-50 w-[380px] max-w-[calc(100vw-48px)] shadow-2xl border-2 border-primary/20 animate-in slide-in-from-bottom-5">
-          <CardHeader className="bg-gradient-to-r from-primary to-secondary text-white rounded-t-lg py-3">
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Bot className="h-5 w-5" />
+        <Card className="fixed bottom-20 right-4 z-50 w-[340px] max-w-[calc(100vw-32px)] shadow-2xl border-2 border-primary/20 animate-in slide-in-from-bottom-5">
+          <CardHeader className="bg-gradient-to-r from-primary to-primary/80 text-white rounded-t-lg py-2.5 px-4">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <div className="p-1 bg-white/20 rounded-full">
+                <Sparkles className="h-4 w-4" />
+              </div>
               Assistant ASSOJEREB
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
-            <ScrollArea className="h-[400px] p-4" ref={scrollRef}>
-              <div className="space-y-4">
+            <ScrollArea className="h-[350px] p-3" ref={scrollRef}>
+              <div className="space-y-3">
                 {messages.map((message, i) => (
                   <div
                     key={i}
                     className={`flex gap-2 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                   >
                     {message.role === 'assistant' && (
-                      <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <Bot className="h-4 w-4 text-primary" />
+                      <div className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <Bot className="h-3.5 w-3.5 text-primary" />
                       </div>
                     )}
                     <div
-                      className={`max-w-[75%] rounded-lg px-3 py-2 ${
+                      className={`max-w-[80%] rounded-lg px-3 py-2 ${
                         message.role === 'user'
                           ? 'bg-primary text-primary-foreground'
                           : 'bg-muted'
                       }`}
                     >
-                      <div className="prose prose-sm dark:prose-invert max-w-none text-sm">
-                        <ReactMarkdown>{message.content}</ReactMarkdown>
-                      </div>
+                      <div 
+                        className="text-sm leading-relaxed [&_p]:mb-1 [&_li]:mb-0.5 [&_strong]:font-semibold"
+                        dangerouslySetInnerHTML={{ __html: formatContent(message.content) }}
+                      />
                     </div>
                     {message.role === 'user' && (
-                      <div className="h-8 w-8 rounded-full bg-secondary/10 flex items-center justify-center flex-shrink-0">
-                        <User className="h-4 w-4 text-secondary" />
+                      <div className="h-7 w-7 rounded-full bg-secondary/10 flex items-center justify-center flex-shrink-0">
+                        <User className="h-3.5 w-3.5 text-secondary" />
                       </div>
                     )}
                   </div>
                 ))}
                 {isLoading && messages[messages.length - 1]?.role === 'user' && (
                   <div className="flex gap-2 items-center">
-                    <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-                      <Loader2 className="h-4 w-4 text-primary animate-spin" />
+                    <div className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center">
+                      <Loader2 className="h-3.5 w-3.5 text-primary animate-spin" />
                     </div>
-                    <div className="text-sm text-muted-foreground">Réflexion en cours...</div>
+                    <div className="text-xs text-muted-foreground">Réflexion...</div>
                   </div>
                 )}
               </div>
             </ScrollArea>
-            <div className="p-4 border-t">
+            <div className="p-3 border-t">
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
@@ -170,9 +193,9 @@ export function AIChatbot() {
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Posez votre question..."
                   disabled={isLoading}
-                  className="flex-1"
+                  className="flex-1 h-9 text-sm"
                 />
-                <Button type="submit" size="icon" disabled={isLoading || !input.trim()}>
+                <Button type="submit" size="icon" className="h-9 w-9" disabled={isLoading || !input.trim()}>
                   <Send className="h-4 w-4" />
                 </Button>
               </form>

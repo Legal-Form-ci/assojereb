@@ -212,3 +212,66 @@
 .animate-slideIn {
   animation: slideIn 0.4s ease-out;
 }
+
+/* TipTap Editor Styles */
+.ProseMirror {
+  @apply min-h-[200px] outline-none;
+}
+
+.ProseMirror p {
+  @apply mb-3;
+}
+
+.ProseMirror h1 {
+  @apply text-2xl font-bold mb-4 font-serif;
+}
+
+.ProseMirror h2 {
+  @apply text-xl font-bold mb-3 font-serif;
+}
+
+.ProseMirror h3 {
+  @apply text-lg font-semibold mb-2 font-serif;
+}
+
+.ProseMirror ul {
+  @apply list-disc pl-5 mb-3;
+}
+
+.ProseMirror ol {
+  @apply list-decimal pl-5 mb-3;
+}
+
+.ProseMirror li {
+  @apply mb-1;
+}
+
+.ProseMirror blockquote {
+  @apply border-l-4 border-primary/30 pl-4 italic text-muted-foreground;
+}
+
+.ProseMirror hr {
+  @apply my-4 border-border;
+}
+
+.ProseMirror table {
+  @apply w-full border-collapse border border-border;
+}
+
+.ProseMirror th,
+.ProseMirror td {
+  @apply border border-border px-3 py-2;
+}
+
+.ProseMirror th {
+  @apply bg-muted font-semibold text-left;
+}
+
+.ProseMirror mark {
+  @apply rounded px-0.5;
+}
+
+.ProseMirror p.is-editor-empty:first-child::before {
+  @apply text-muted-foreground pointer-events-none float-left h-0;
+  content: attr(data-placeholder);
+}

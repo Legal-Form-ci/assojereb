@@ -70,6 +70,7 @@ serve(async (req) => {
         message: "Admin user created successfully", 
         success: true,
         email: "admin@assojereb.ci"
+        email: "arcelkonan@ivoireprojet.com"
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );

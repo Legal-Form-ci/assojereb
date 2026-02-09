@@ -152,7 +152,7 @@ export default function HousesManagement() {
           <div>
             <h1 className="font-serif text-3xl font-bold text-foreground">Gestion des Maisons</h1>
             <p className="text-muted-foreground mt-1">
-              Les 42 maisons du village organisées par famille
+              Les 43 maisons du village organisées par famille
             </p>
           </div>
           

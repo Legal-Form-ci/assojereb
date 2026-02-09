@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -6,7 +6,7 @@ import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent } from '@/components/ui/card';
 import { DialogFooter } from '@/components/ui/dialog';
-import { Loader2, Sparkles, Upload, X, Video, Wand2 } from 'lucide-react';
+import { Loader2, Upload, X, Video, Wand2 } from 'lucide-react';
 import { NEWS_CATEGORIES, NewsFormData } from '@/hooks/useNews';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -89,23 +89,47 @@ export function NewsEditorForm({ formData, onChange, onSubmit, onCancel, isPendi
         if (jsonMatch) {
           const aiData = JSON.parse(jsonMatch[0]);
           
+          // Clean and format the title (uppercase, bold)
+          const cleanTitle = (aiData.title || formData.title).toUpperCase();
+          
+          // Clean content - remove any markdown artifacts
+          let cleanContent = aiData.content || formData.content;
+          cleanContent = cleanContent
+            .replace(/\*\*/g, '') // Remove markdown bold
+            .replace(/##/g, '') // Remove markdown headers
+            .replace(/###/g, '')
+            .replace(/\n\n/g, '</p><p>')
+            .replace(/\n/g, '<br>');
+          
+          // Ensure content starts with proper HTML if not already
+          if (!cleanContent.startsWith('<')) {
+            cleanContent = `<p>${cleanContent}</p>`;
+          }
+          
           // Update form with AI suggestions
           onChange({
             ...formData,
-            title: aiData.title || formData.title,
-            content: aiData.content || formData.content,
+            title: cleanTitle,
+            content: cleanContent,
             category: aiData.category || formData.category,
           });
           
-          toast.success('Contenu généré avec succès !');
+          toast.success('Contenu généré avec succès ! Titre en MAJUSCULES, contenu structuré.');
         } else {
-          // If not JSON, use the response as enriched content
-          onChange({ ...formData, content: fullResponse });
+          // If not JSON, clean and use the response as enriched content
+          let cleanContent = fullResponse
+            .replace(/\*\*/g, '')
+            .replace(/##/g, '')
+            .replace(/###/g, '');
+          onChange({ ...formData, content: cleanContent });
           toast.success('Contenu enrichi avec succès !');
         }
       } catch {
-        // Fallback: use as enriched content
-        onChange({ ...formData, content: fullResponse });
+        // Fallback: clean and use as enriched content
+        const cleanContent = fullResponse
+          .replace(/\*\*/g, '')
+          .replace(/##/g, '');
+        onChange({ ...formData, content: cleanContent });
         toast.success('Contenu enrichi !');
       }
     } catch (error) {
@@ -187,12 +211,14 @@ export function NewsEditorForm({ formData, onChange, onSubmit, onCancel, isPendi
     
     try {
       const uploadedUrls = await uploadMedia();
+      
+      // Ensure title is uppercase
       const updatedFormData = {
         ...formData,
+        title: formData.title.toUpperCase(),
         image_url: uploadedUrls[0] || formData.image_url,
+        media_urls: uploadedUrls.length > 0 ? uploadedUrls : formData.media_urls,
       };
-      
-      (updatedFormData as any).media_urls = uploadedUrls;
       
       onChange(updatedFormData);
       
@@ -207,19 +233,19 @@ export function NewsEditorForm({ formData, onChange, onSubmit, onCancel, isPendi
     <form onSubmit={handleSubmit} className="space-y-4">
       {/* AI Generate Button - Prominent */}
       <Card className="border-2 border-dashed border-secondary/50 bg-secondary/5">
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between gap-4">
+        <CardContent className="p-3 sm:p-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex-1">
-              <p className="font-medium text-sm">Génération automatique IA</p>
+              <p className="font-medium text-sm">🤖 Génération automatique IA</p>
               <p className="text-xs text-muted-foreground">
-                Écrivez un texte brut dans le contenu, puis cliquez sur Générer. L'IA va structurer, enrichir et remplir automatiquement tous les champs.
+                Écrivez un texte brut, cliquez sur Générer. L'IA structure et remplit tous les champs automatiquement.
               </p>
             </div>
             <Button
               type="button"
               onClick={handleAutoGenerate}
               disabled={isEnhancing || !formData.content.trim()}
-              className="btn-gold-gradient gap-2 shrink-0"
+              className="btn-gold-gradient gap-2 shrink-0 w-full sm:w-auto"
             >
               {isEnhancing ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -232,59 +258,61 @@ export function NewsEditorForm({ formData, onChange, onSubmit, onCancel, isPendi
         </CardContent>
       </Card>
 
-      <div className="space-y-2">
-        <Label htmlFor="title">Titre *</Label>
-        <Input
-          id="title"
-          value={formData.title}
-          onChange={(e) => onChange({ ...formData, title: e.target.value })}
-          placeholder="Titre de l'actualité"
-          required
-          className="font-semibold"
-        />
-      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="title">Titre * (sera en MAJUSCULES)</Label>
+          <Input
+            id="title"
+            value={formData.title}
+            onChange={(e) => onChange({ ...formData, title: e.target.value })}
+            placeholder="Titre de l'actualité"
+            required
+            className="font-bold uppercase"
+          />
+        </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="category">Catégorie *</Label>
-        <Select 
-          value={formData.category} 
-          onValueChange={(v) => onChange({ ...formData, category: v })}
-        >
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {NEWS_CATEGORIES.map((cat) => (
-              <SelectItem key={cat.value} value={cat.value}>
-                {cat.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="space-y-2">
+          <Label htmlFor="category">Catégorie *</Label>
+          <Select 
+            value={formData.category} 
+            onValueChange={(v) => onChange({ ...formData, category: v })}
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {NEWS_CATEGORIES.map((cat) => (
+                <SelectItem key={cat.value} value={cat.value}>
+                  {cat.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="content">Contenu *</Label>
         <p className="text-xs text-muted-foreground mb-2">
-          Écrivez votre texte brut ici, puis utilisez "Générer" pour le structurer automatiquement, ou formatez-le manuellement avec la barre d'outils.
+          ✍️ Écrivez votre texte brut, puis "Générer" pour le structurer. L'éditeur fonctionne comme un email : gras, italique, couleurs visibles directement.
         </p>
         <RichTextEditor
           content={formData.content}
           onChange={(html) => onChange({ ...formData, content: html })}
-          placeholder="Écrivez votre contenu ici..."
+          placeholder="Écrivez votre contenu ici... L'IA le structurera automatiquement."
         />
       </div>
 
       {/* Media Upload */}
       <div className="space-y-2">
-        <Label>Images et Vidéos</Label>
+        <Label>📷 Images et Vidéos (obligatoire)</Label>
         <Card 
           className="border-dashed cursor-pointer hover:bg-muted/50 transition-colors"
           onClick={() => fileInputRef.current?.click()}
         >
-          <CardContent className="p-6 text-center">
-            <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
-            <p className="text-sm text-muted-foreground">
+          <CardContent className="p-4 sm:p-6 text-center">
+            <Upload className="h-6 w-6 sm:h-8 sm:w-8 mx-auto text-muted-foreground mb-2" />
+            <p className="text-xs sm:text-sm text-muted-foreground">
               Cliquez pour ajouter des images (max 20Mo) ou vidéos (max 500Mo)
             </p>
             <input
@@ -299,12 +327,12 @@ export function NewsEditorForm({ formData, onChange, onSubmit, onCancel, isPendi
         </Card>
         
         {mediaPreviews.length > 0 && (
-          <div className="grid grid-cols-3 gap-2 mt-2">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2">
             {mediaPreviews.map((preview, index) => (
               <div key={index} className="relative aspect-video rounded-lg overflow-hidden border">
                 {mediaFiles[index]?.type.startsWith('video/') ? (
                   <div className="w-full h-full bg-muted flex items-center justify-center">
-                    <Video className="h-8 w-8 text-muted-foreground" />
+                    <Video className="h-6 w-6 sm:h-8 sm:w-8 text-muted-foreground" />
                   </div>
                 ) : (
                   <img src={preview} alt="" className="w-full h-full object-cover" />
@@ -334,11 +362,11 @@ export function NewsEditorForm({ formData, onChange, onSubmit, onCancel, isPendi
         <Label htmlFor="is_published">Publier immédiatement</Label>
       </div>
 
-      <DialogFooter>
-        <Button type="button" variant="outline" onClick={onCancel}>
+      <DialogFooter className="flex-col sm:flex-row gap-2">
+        <Button type="button" variant="outline" onClick={onCancel} className="w-full sm:w-auto">
           Annuler
         </Button>
-        <Button type="submit" className="btn-primary-gradient" disabled={isPending || uploadingMedia}>
+        <Button type="submit" className="btn-primary-gradient w-full sm:w-auto" disabled={isPending || uploadingMedia}>
           {(isPending || uploadingMedia) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {uploadingMedia ? 'Téléchargement...' : isEditing ? 'Modifier' : 'Publier'}
         </Button>

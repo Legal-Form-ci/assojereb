@@ -87,7 +87,7 @@ export default function SettingsPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Building2 className="h-5 w-5" />
-                  Les 42 Maisons du Village
+                  Les 43 Maisons du Village
                 </CardTitle>
                 <CardDescription>
                   Liste des maisons numérotées du village

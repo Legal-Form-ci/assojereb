@@ -80,52 +80,52 @@ export function AppLayout({ children }: AppLayoutProps) {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed lg:static inset-y-0 left-0 z-50 w-64 bg-sidebar flex flex-col transition-transform duration-300 lg:translate-x-0",
+          "fixed lg:static inset-y-0 left-0 z-50 w-56 lg:w-60 bg-sidebar flex flex-col transition-transform duration-300 lg:translate-x-0",
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        {/* Logo - More compact */}
-        <div className="flex items-center justify-between p-4 border-b border-sidebar-border">
+        {/* Logo - Compact */}
+        <div className="flex items-center justify-between px-3 py-2 border-b border-sidebar-border">
           <Link to="/dashboard" className="flex items-center gap-2">
             <img 
               src={logoAssojereb} 
               alt="Logo ASSOJEREB" 
-              className="w-9 h-9 rounded-full object-cover"
+              className="w-8 h-8 rounded-full object-cover"
             />
             <div>
-              <h1 className="font-serif text-base font-bold text-sidebar-foreground leading-tight">ASSOJEREB</h1>
-              <p className="text-[10px] text-sidebar-foreground/60">Brongonzué</p>
+              <h1 className="font-serif text-sm font-bold text-sidebar-foreground leading-none">ASSOJEREB</h1>
+              <p className="text-[9px] text-sidebar-foreground/60">Brongonzué</p>
             </div>
           </Link>
           <button
-            className="lg:hidden text-sidebar-foreground"
+            className="lg:hidden text-sidebar-foreground p-1"
             onClick={() => setSidebarOpen(false)}
           >
-            <X className="h-5 w-5" />
+            <X className="h-4 w-4" />
           </button>
         </div>
 
-        {/* User info - More compact */}
-        <div className="p-3 border-b border-sidebar-border">
+        {/* User info - Compact */}
+        <div className="px-3 py-2 border-b border-sidebar-border">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-sidebar-accent flex items-center justify-center shrink-0">
+            <div className="w-7 h-7 rounded-full bg-sidebar-accent flex items-center justify-center shrink-0">
               <span className="text-xs font-medium text-sidebar-foreground">
                 {user?.email?.charAt(0).toUpperCase()}
               </span>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-medium text-sidebar-foreground truncate">
+              <p className="text-[11px] font-medium text-sidebar-foreground truncate">
                 {user?.email}
               </p>
-              <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-sidebar-primary/20 text-sidebar-primary">
+              <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-medium bg-sidebar-primary/20 text-sidebar-primary">
                 {roleLabel}
               </span>
             </div>
           </div>
         </div>
 
-        {/* Navigation - Tighter spacing */}
-        <nav className="flex-1 p-2 space-y-0.5 overflow-y-auto">
+        {/* Navigation - Tight spacing */}
+        <nav className="flex-1 px-2 py-1.5 space-y-0.5 overflow-y-auto">
           {filteredNavItems.map((item) => {
             const isActive = location.pathname === item.href;
             return (
@@ -134,7 +134,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                 to={item.href}
                 onClick={() => setSidebarOpen(false)}
                 className={cn(
-                  "flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-foreground transition-all duration-200",
+                  "flex items-center gap-2 px-2.5 py-1.5 rounded-md text-[13px] text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-foreground transition-all duration-200",
                   isActive && "bg-sidebar-accent text-sidebar-foreground font-medium"
                 )}
               >
@@ -146,10 +146,10 @@ export function AppLayout({ children }: AppLayoutProps) {
         </nav>
 
         {/* Footer */}
-        <div className="p-2 border-t border-sidebar-border space-y-0.5">
+        <div className="px-2 py-1.5 border-t border-sidebar-border space-y-0.5">
           <Link
             to="/"
-            className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-foreground transition-all"
+            className="flex items-center gap-2 px-2.5 py-1.5 rounded-md text-[13px] text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-foreground transition-all"
             onClick={() => setSidebarOpen(false)}
           >
             <Home className="h-4 w-4" />
@@ -157,7 +157,7 @@ export function AppLayout({ children }: AppLayoutProps) {
           </Link>
           <button
             onClick={handleSignOut}
-            className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm w-full text-left text-destructive hover:bg-destructive/10 transition-all"
+            className="flex items-center gap-2 px-2.5 py-1.5 rounded-md text-[13px] w-full text-left text-destructive hover:bg-destructive/10 transition-all"
           >
             <LogOut className="h-4 w-4" />
             <span>Déconnexion</span>
@@ -166,12 +166,12 @@ export function AppLayout({ children }: AppLayoutProps) {
       </aside>
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col min-h-screen">
-        {/* Mobile header - More compact */}
+      <div className="flex-1 flex flex-col min-h-screen w-full">
+        {/* Mobile header - Compact */}
         <header className="lg:hidden sticky top-0 z-30 bg-background border-b border-border px-3 py-2 flex items-center justify-between">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="p-1.5 -ml-1"
+            className="p-1 -ml-1"
           >
             <Menu className="h-5 w-5 text-foreground" />
           </button>
@@ -183,11 +183,11 @@ export function AppLayout({ children }: AppLayoutProps) {
             />
             <span className="font-serif font-bold text-sm">ASSOJEREB</span>
           </Link>
-          <div className="w-8" />
+          <div className="w-7" />
         </header>
 
         {/* Page content */}
-        <main className="flex-1 p-3 lg:p-6 overflow-x-hidden">
+        <main className="flex-1 p-3 sm:p-4 lg:p-6 overflow-x-hidden">
           {children}
         </main>
 

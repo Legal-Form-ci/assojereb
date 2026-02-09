@@ -11,7 +11,7 @@ const SYSTEM_PROMPT = `Tu es l'assistant virtuel intelligent de l'ASSOJEREB (Ass
 Tu connais parfaitement l'association:
 - C'est une association des ressortissants de Brongonzué, un village du centre de la Côte d'Ivoire, pays Baoulé
 - L'association est organisée en 6 grandes familles: DJELA OSSOU, ZOKOUAKOU, YAO GNANNI, AHOUMMOI BLE OSSOU, HOUMBOUANOU, TOUA ZAMME
-- Il y a 42 maisons au village qui sont réparties entre ces familles
+- Il y a 43 maisons au village qui sont réparties entre ces familles
 - Les cotisations mensuelles varient selon les catégories de membres
 - L'association organise des événements culturels comme le Paquinou
 
@@ -29,46 +29,67 @@ Tu dois:
 - Répondre en français avec un ton chaleureux
 - Donner des réponses précises et contextualisées`;
 
-const NEWS_AUTO_GENERATE_PROMPT = `Tu es un rédacteur professionnel expert pour l'ASSOJEREB. Tu dois générer du contenu structuré et professionnel à partir d'un texte brut.
+const NEWS_AUTO_GENERATE_PROMPT = `Tu es un rédacteur professionnel expert pour l'ASSOJEREB. Tu DOIS générer du contenu structuré et professionnel à partir d'un texte brut.
 
-RÈGLES IMPORTANTES:
-1. DÉTECTE automatiquement le type de contenu (événement, communiqué, décès, mariage, naissance, annonce générale)
-2. STRUCTURE le contenu de manière appropriée selon le type détecté
-3. Utilise un STYLE CONCIS et IMPACTANT - pas de textes longs et inutiles
-4. Pour les ÉVÉNEMENTS: mets en avant la date, le lieu, les invités de manière percutante
+🚨 RÈGLES ABSOLUES - À RESPECTER IMPÉRATIVEMENT:
 
-FORMAT DE RÉPONSE (JSON):
+1. DÉTECTE AUTOMATIQUEMENT le type de contenu:
+   - "evenement" : pour les événements, fêtes, célébrations, rencontres
+   - "communique" : pour les communiqués officiels, annonces administratives
+   - "deces" : pour les avis de décès
+   - "mariage" : pour les annonces de mariage
+   - "anniversaire" : pour les anniversaires
+   - "opportunite" : pour les opportunités, offres, partenariats
+   - "projet" : pour les projets communautaires
+   - "general" : pour les autres actualités
+
+2. STYLE PROFESSIONNEL ET CONCIS:
+   - Titres COURTS et PERCUTANTS
+   - Phrases d'accroche en ITALIQUE
+   - PAS de biographies longues
+   - PAS de textes inutiles
+   - MAXIMUM 200 mots pour le contenu
+
+3. FORMAT HTML OBLIGATOIRE (PAS de markdown, PAS de **, PAS de ###):
+   - <h2> pour le titre principal (avec emojis appropriés)
+   - <p><em>phrase d'accroche courte</em></p> en italique
+   - <p> pour les paragraphes
+   - <strong> pour le gras
+   - <ul><li> pour les listes
+   - <br> pour les sauts de ligne
+
+4. STRUCTURE TYPE POUR ÉVÉNEMENT:
+<h2>🎉 TITRE EN MAJUSCULES 🎉</h2>
+<p><em>Phrase d'accroche courte et percutante</em></p>
+<p>Description brève de l'événement (2-3 phrases max)</p>
+<h3>🎤 Points clés</h3>
+<ul>
+  <li>Point 1</li>
+  <li>Point 2</li>
+</ul>
+<p>📍 <strong>Lieu</strong> : Nom du lieu<br>📅 <strong>Date</strong> : Date prévue</p>
+<p>📞 <strong>Contact</strong> : Le Président de l'association</p>
+
+5. STRUCTURE TYPE POUR COMMUNIQUÉ:
+<h2>📢 TITRE DU COMMUNIQUÉ</h2>
+<p><em>Objet du communiqué</em></p>
+<p>Contenu du communiqué...</p>
+<p>👉 <strong>Contact</strong> : Le Président</p>
+
+6. STRUCTURE TYPE POUR DÉCÈS:
+<h2>🕊️ AVIS DE DÉCÈS</h2>
+<p><em>L'ASSOJEREB a la profonde douleur d'annoncer...</em></p>
+<p>Informations sur le défunt...</p>
+
+FORMAT DE RÉPONSE (JSON STRICT):
 {
-  "title": "Titre accrocheur et pertinent",
-  "category": "evenement|communique|deces|naissance|mariage|general",
-  "content": "<p>Contenu HTML structuré avec paragraphes, listes, titres...</p>"
+  "title": "TITRE EN MAJUSCULES",
+  "category": "evenement|communique|deces|mariage|anniversaire|opportunite|projet|general",
+  "content": "<h2>...</h2><p><em>accroche</em></p>..."
 }
 
-EXEMPLES DE STYLE ATTENDU:
-
-Pour un ÉVÉNEMENT:
-<h2>🎉 PAQUINOU 2026 À BRONGONZUÉ 🎉</h2>
-<p><strong>✨ Les plus grands artistes Baoulé réunis !</strong></p>
-<p>L'ASSOJEREB annonce la grande édition du PAQUINOU 2026, à l'occasion des fêtes de Pâques 2026, au village de Brongonzué.</p>
-<p>Un événement culturel majeur qui réunira les grandes voix de la musique tradi-moderne baoulé.</p>
-<h3>🎤 Artistes invités</h3>
-<ul>
-  <li>Adeba Konan</li>
-  <li>N'Guess Bon Sens</li>
-  <li>Sidonie la Tigresse</li>
-</ul>
-<p>📍 <strong>Lieu</strong> : Brongonzué<br>📅 <strong>Date</strong> : Pâques 2026</p>
-<p>👉 Plus d'informations très bientôt.</p>
-
-Pour un COMMUNIQUÉ:
-<h2>📢 Communiqué officiel</h2>
-<p>Le bureau exécutif de l'ASSOJEREB informe...</p>
-
-Pour un DÉCÈS:
-<h2>🕊️ Avis de décès</h2>
-<p>C'est avec une profonde tristesse que l'ASSOJEREB annonce le rappel à Dieu de...</p>
-
-IMPORTANT: Génère du HTML propre, pas de markdown. Utilise <p>, <h2>, <h3>, <ul>, <li>, <strong>, <em>.`;
+⚠️ Le titre doit TOUJOURS être en MAJUSCULES dans le JSON.
+⚠️ Génère UNIQUEMENT du HTML propre, JAMAIS de markdown.`;
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -90,20 +111,21 @@ serve(async (req) => {
     if (type === 'news-auto-generate') {
       systemPrompt = NEWS_AUTO_GENERATE_PROMPT;
     } else if (type === 'news-summary') {
-      systemPrompt = `Tu es un rédacteur professionnel pour l'ASSOJEREB. Génère un résumé concis (2-3 phrases) et accrocheur du contenu fourni.`;
+      systemPrompt = `Tu es un rédacteur professionnel pour l'ASSOJEREB. Génère un résumé concis (2-3 phrases) et accrocheur du contenu fourni. Utilise un style professionnel.`;
     } else if (type === 'news-enhance') {
       systemPrompt = `Tu es un rédacteur professionnel pour l'ASSOJEREB. Enrichis et structure le contenu fourni en HTML professionnel.
       
-Utilise:
-- <h2> pour les titres principaux
-- <h3> pour les sous-titres
-- <p> pour les paragraphes
-- <strong> pour le gras
-- <em> pour l'italique
-- <ul><li> pour les listes
-- Des emojis pertinents pour rendre le contenu vivant
+RÈGLES:
+- Utilise <h2> pour les titres principaux (EN MAJUSCULES)
+- Utilise <h3> pour les sous-titres
+- Utilise <p> pour les paragraphes
+- Utilise <strong> pour le gras
+- Utilise <em> pour l'italique (phrases d'accroche)
+- Utilise <ul><li> pour les listes
+- Ajoute des emojis pertinents
 
-IMPORTANT: Génère du HTML propre, PAS de markdown (pas de ** ou ##).`;
+IMPORTANT: Génère du HTML propre, PAS de markdown (pas de ** ou ##).
+Le contenu doit être CONCIS et PROFESSIONNEL.`;
     } else if (type === 'contribution-analysis') {
       systemPrompt = `Tu es un analyste financier pour l'ASSOJEREB. Analyse les tendances de cotisations et prédis les retards potentiels. Fournis des insights clairs et des recommandations actionables.`;
     } else if (type === 'chat-with-context') {
@@ -112,18 +134,37 @@ IMPORTANT: Génère du HTML propre, PAS de markdown (pas de ** ou ##).`;
       const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
       const supabase = createClient(supabaseUrl, supabaseKey);
       
-      // Fetch some context data
-      const [membersResult, newsResult, contributionsResult] = await Promise.all([
-        supabase.from('members').select('id, first_name, last_name, status').limit(50),
-        supabase.from('news').select('id, title, category, published_at').eq('is_published', true).order('published_at', { ascending: false }).limit(10),
-        supabase.from('contributions').select('id, amount, status, period_month, period_year').order('created_at', { ascending: false }).limit(20),
+      // Fetch comprehensive context data
+      const [membersResult, familiesResult, housesResult, newsResult, contributionsResult, categoriesResult] = await Promise.all([
+        supabase.from('members').select('id, first_name, last_name, status, family_id, profession').limit(100),
+        supabase.from('families').select('id, name, description').order('display_order'),
+        supabase.from('houses').select('id, name, house_number, family_id').order('house_number'),
+        supabase.from('news').select('id, title, category, published_at').eq('is_published', true).order('published_at', { ascending: false }).limit(20),
+        supabase.from('contributions').select('id, amount, status, period_month, period_year, contribution_type').order('created_at', { ascending: false }).limit(50),
+        supabase.from('contribution_categories').select('id, name, monthly_amount').eq('is_active', true),
       ]);
 
       const contextData = `
-DONNÉES EN TEMPS RÉEL:
-- Nombre de membres: ${membersResult.data?.length || 0}
-- Dernières actualités: ${newsResult.data?.map(n => n.title).join(', ') || 'Aucune'}
-- Cotisations récentes: ${contributionsResult.data?.length || 0} enregistrements
+DONNÉES EN TEMPS RÉEL DE L'ASSOCIATION:
+
+📊 STATISTIQUES:
+- Nombre total de membres: ${membersResult.data?.length || 0}
+- Nombre de familles: ${familiesResult.data?.length || 0}
+- Nombre de maisons: ${housesResult.data?.length || 0}
+
+👨‍👩‍👧‍👦 LES 6 GRANDES FAMILLES:
+${familiesResult.data?.map(f => `- ${f.name}: ${f.description || 'Famille du village'}`).join('\n') || 'Non disponible'}
+
+🏠 MAISONS (${housesResult.data?.length || 0} au total):
+Les maisons sont numérotées de 1 à ${housesResult.data?.length || 43}.
+
+📰 DERNIÈRES ACTUALITÉS:
+${newsResult.data?.map(n => `- ${n.title} (${n.category})`).join('\n') || 'Aucune actualité récente'}
+
+💰 COTISATIONS RÉCENTES: ${contributionsResult.data?.length || 0} enregistrements
+
+📋 GRILLE DES COTISATIONS:
+${categoriesResult.data?.map(c => `- ${c.name}: ${c.monthly_amount} FCFA/mois`).join('\n') || 'Non disponible'}
 `;
       
       systemPrompt = SYSTEM_PROMPT + '\n\n' + contextData;

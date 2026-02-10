@@ -6,10 +6,9 @@ import { Card, CardContent } from '@/components/ui/card';
 import { ArrowLeft, Calendar, Share2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
 import { Footer } from '@/components/Footer';
 import logoAssojereb from '@/assets/logo-assojereb.png';
+import { useEffect } from 'react';
 
 export default function NewsDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -17,6 +16,11 @@ export default function NewsDetailPage() {
   const { data: article, isLoading } = useNewsBySlug(id);
   
   const categoryInfo = article ? NEWS_CATEGORIES.find(c => c.value === article.category) : null;
+
+  // Scroll to top on mount
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [id]);
 
   if (isLoading) {
     return (
@@ -48,7 +52,7 @@ export default function NewsDetailPage() {
     );
   }
 
-  const mediaUrls = article.media_urls || [];
+  const mediaUrls = Array.isArray(article.media_urls) ? article.media_urls as string[] : [];
 
   return (
     <div className="min-h-screen bg-background">
@@ -73,7 +77,7 @@ export default function NewsDetailPage() {
                   {format(new Date(article.published_at), "EEEE d MMMM yyyy 'à' HH:mm", { locale: fr })}
                 </div>
               </div>
-              <h1 className="font-serif text-3xl md:text-4xl font-bold leading-tight">
+              <h1 className="font-serif text-3xl md:text-4xl font-bold leading-tight uppercase">
                 {article.title}
               </h1>
             </header>
@@ -89,14 +93,13 @@ export default function NewsDetailPage() {
               </div>
             )}
 
-            {/* Content */}
+            {/* Content - Render HTML directly, NOT markdown */}
             <Card className="border-l-4 border-b-4 border-l-secondary border-b-secondary border-r-4 border-t-4 border-r-primary border-t-primary">
               <CardContent className="p-6 md:p-8">
-                <div className="prose prose-lg dark:prose-invert max-w-none prose-headings:font-serif prose-p:text-foreground prose-p:leading-relaxed prose-strong:text-primary prose-em:text-secondary">
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                    {article.content}
-                  </ReactMarkdown>
-                </div>
+                <div 
+                  className="prose prose-lg dark:prose-invert max-w-none prose-headings:font-serif prose-headings:font-bold prose-headings:uppercase prose-p:text-foreground prose-p:leading-relaxed prose-strong:text-primary prose-strong:font-bold prose-em:text-secondary prose-em:text-sm prose-ul:list-disc prose-ol:list-decimal prose-li:text-foreground prose-h2:text-xl prose-h2:mt-6 prose-h2:mb-3 prose-h3:text-lg prose-h3:mt-4 prose-h3:mb-2 prose-table:border prose-td:p-2 prose-th:p-2 prose-td:border prose-th:border"
+                  dangerouslySetInnerHTML={{ __html: article.content }}
+                />
               </CardContent>
             </Card>
 
@@ -107,10 +110,10 @@ export default function NewsDetailPage() {
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   {mediaUrls.map((url: string, index: number) => (
                     <div key={index} className="aspect-video rounded-lg overflow-hidden border-2 border-primary/20">
-                      {url.includes('.mp4') || url.includes('.webm') ? (
+                      {typeof url === 'string' && (url.includes('.mp4') || url.includes('.webm')) ? (
                         <video src={url} controls className="w-full h-full object-cover" />
                       ) : (
-                        <img src={url} alt={`Media ${index + 1}`} className="w-full h-full object-cover" />
+                        <img src={url as string} alt={`Media ${index + 1}`} className="w-full h-full object-cover" />
                       )}
                     </div>
                   ))}

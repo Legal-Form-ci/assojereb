@@ -375,7 +375,7 @@ export default function LandingPage() {
             </div>
             <p className="text-xs text-muted-foreground mt-4">
               <Calendar className="inline h-3 w-3 mr-1" />
-              Les inscriptions sont gérées par les chefs de famille et l'administration
+              Les inscriptions sont gérées par les gestionnaires de famille et l'administration
             </p>
           </div>
         </div>

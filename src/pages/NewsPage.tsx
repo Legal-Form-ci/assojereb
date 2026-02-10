@@ -84,11 +84,12 @@ export default function NewsPage() {
               <NewsCard
                 key={item.id}
                 id={item.id}
+                slug={item.slug}
                 title={item.title}
                 content={item.content}
                 category={item.category}
                 image_url={item.image_url}
-                media_urls={(item as any).media_urls}
+                media_urls={Array.isArray(item.media_urls) ? item.media_urls as string[] : []}
                 published_at={item.published_at}
               />
             ))}

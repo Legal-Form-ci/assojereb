@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Plus, Newspaper, Edit, Trash2, Eye, EyeOff } from 'lucide-react';
+import { Plus, Newspaper, Edit, Trash2, Eye, EyeOff, ToggleLeft } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { News } from '@/types/database';
@@ -76,6 +76,18 @@ export default function NewsManagementPage() {
 
   const handleDelete = async (id: string) => {
     await deleteNews.mutateAsync(id);
+  };
+
+  const handleTogglePublish = async (item: News) => {
+    await updateNews.mutateAsync({
+      id: item.id,
+      title: item.title,
+      content: item.content,
+      category: item.category,
+      image_url: item.image_url || undefined,
+      media_urls: Array.isArray(item.media_urls) ? item.media_urls as string[] : [],
+      is_published: !item.is_published,
+    });
   };
 
   const getCategoryLabel = (category: string) => {
@@ -202,6 +214,14 @@ export default function NewsManagementPage() {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            title={item.is_published ? 'Dépublier' : 'Publier'}
+                            onClick={() => handleTogglePublish(item)}
+                          >
+                            <ToggleLeft className={`h-4 w-4 ${item.is_published ? 'text-success' : 'text-muted-foreground'}`} />
+                          </Button>
                           <Button 
                             variant="ghost" 
                             size="icon"

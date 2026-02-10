@@ -28,6 +28,7 @@ import MemberVerification from "./pages/MemberVerification";
 import RoleManagement from "./pages/RoleManagement";
 import UserGuide from "./pages/UserGuide";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { ScrollToTop } from "./components/ScrollToTop";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +39,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <ScrollToTop />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { AppLayout } from '@/components/AppLayout';
 import { useMember, useMembers, MemberFormData } from '@/hooks/useMembers';
@@ -8,10 +8,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Loader2, ArrowLeft, Save } from 'lucide-react';
+import { Loader2, ArrowLeft, Save, User, X } from 'lucide-react';
 import { Gender, GeographicZone, MemberStatus } from '@/types/database';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 export default function EditMemberPage() {
   const { id } = useParams<{ id: string }>();
@@ -24,6 +26,46 @@ export default function EditMemberPage() {
   
   const [formData, setFormData] = useState<Partial<MemberFormData>>({});
   const [isInitialized, setIsInitialized] = useState(false);
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) { toast.error('Veuillez sélectionner une image'); return; }
+    if (file.size > 5 * 1024 * 1024) { toast.error('La photo ne doit pas dépasser 5 Mo'); return; }
+    setPhotoFile(file);
+    const reader = new FileReader();
+    reader.onloadend = () => setPhotoPreview(reader.result as string);
+    reader.readAsDataURL(file);
+  };
+
+  const removePhoto = () => {
+    setPhotoFile(null);
+    setPhotoPreview(null);
+    setFormData(prev => ({ ...prev, photo_url: '' }));
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const uploadPhoto = async (): Promise<string | null> => {
+    if (!photoFile) return null;
+    setUploadingPhoto(true);
+    try {
+      const fileName = `members/${Date.now()}-${Math.random().toString(36).substring(7)}-${photoFile.name}`;
+      const { data, error } = await supabase.storage.from('news-media').upload(fileName, photoFile);
+      if (error) throw error;
+      const { data: urlData } = supabase.storage.from('news-media').getPublicUrl(data.path);
+      return urlData.publicUrl;
+    } catch (error) {
+      console.error('Photo upload error:', error);
+      toast.error('Erreur lors du téléchargement de la photo');
+      return null;
+    } finally {
+      setUploadingPhoto(false);
+    }
+  };
 
   useEffect(() => {
     if (member && !isInitialized) {
@@ -43,19 +85,23 @@ export default function EditMemberPage() {
         address: member.address || '',
         status: member.status,
         notes: member.notes || '',
+        photo_url: member.photo_url || '',
       });
+      if (member.photo_url) setPhotoPreview(member.photo_url);
       setIsInitialized(true);
     }
   }, [member, isInitialized]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!formData.first_name || !formData.last_name || !formData.family_id || !id) {
-      return;
+    if (!formData.first_name || !formData.last_name || !formData.family_id || !id) return;
+
+    let photoUrl = formData.photo_url || null;
+    if (photoFile) {
+      photoUrl = await uploadPhoto();
     }
 
-    await updateMember.mutateAsync({ id, ...formData as MemberFormData });
+    await updateMember.mutateAsync({ id, ...formData as MemberFormData, photo_url: photoUrl });
     navigate(`/membres/${id}`);
   };
 
@@ -106,7 +152,40 @@ export default function EditMemberPage() {
           </div>
         </div>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <Card className="card-elevated">
+            <CardHeader>
+              <CardTitle>Photo du membre</CardTitle>
+              <CardDescription>Modifier la photo du membre</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center gap-6">
+                <div
+                  className="relative w-32 h-32 rounded-xl border-2 border-dashed border-border hover:border-primary transition-colors cursor-pointer overflow-hidden bg-muted/50"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  {photoPreview ? (
+                    <>
+                      <img src={photoPreview} alt="Preview" className="w-full h-full object-cover" />
+                      <button type="button" onClick={(e) => { e.stopPropagation(); removePhoto(); }} className="absolute top-1 right-1 p-1 bg-destructive text-destructive-foreground rounded-full">
+                        <X className="h-3 w-3" />
+                      </button>
+                    </>
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center gap-2">
+                      <User className="h-10 w-10 text-muted-foreground/50" />
+                      <span className="text-xs text-muted-foreground">Cliquez pour ajouter</span>
+                    </div>
+                  )}
+                </div>
+                <input ref={fileInputRef} type="file" accept="image/*" onChange={handlePhotoSelect} className="hidden" />
+                <div className="flex-1">
+                  <p className="text-sm text-muted-foreground">Formats : JPG, PNG, GIF — Max : 5 Mo</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           <Card className="card-elevated">
             <CardHeader>
               <CardTitle>Informations personnelles</CardTitle>
@@ -232,8 +311,8 @@ export default function EditMemberPage() {
                 <Button type="button" variant="outline" onClick={() => navigate(-1)} className="flex-1">
                   Annuler
                 </Button>
-                <Button type="submit" className="flex-1 btn-primary-gradient" disabled={updateMember.isPending}>
-                  {updateMember.isPending ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Enregistrement...</> : <><Save className="mr-2 h-4 w-4" />Enregistrer</>}
+                <Button type="submit" className="flex-1 btn-primary-gradient" disabled={updateMember.isPending || uploadingPhoto}>
+                  {(updateMember.isPending || uploadingPhoto) ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{uploadingPhoto ? 'Téléchargement photo...' : 'Enregistrement...'}</> : <><Save className="mr-2 h-4 w-4" />Enregistrer</>}
                 </Button>
               </div>
             </CardContent>

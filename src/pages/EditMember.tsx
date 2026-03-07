@@ -26,6 +26,46 @@ export default function EditMemberPage() {
   
   const [formData, setFormData] = useState<Partial<MemberFormData>>({});
   const [isInitialized, setIsInitialized] = useState(false);
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) { toast.error('Veuillez sélectionner une image'); return; }
+    if (file.size > 5 * 1024 * 1024) { toast.error('La photo ne doit pas dépasser 5 Mo'); return; }
+    setPhotoFile(file);
+    const reader = new FileReader();
+    reader.onloadend = () => setPhotoPreview(reader.result as string);
+    reader.readAsDataURL(file);
+  };
+
+  const removePhoto = () => {
+    setPhotoFile(null);
+    setPhotoPreview(null);
+    setFormData(prev => ({ ...prev, photo_url: '' }));
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const uploadPhoto = async (): Promise<string | null> => {
+    if (!photoFile) return null;
+    setUploadingPhoto(true);
+    try {
+      const fileName = `members/${Date.now()}-${Math.random().toString(36).substring(7)}-${photoFile.name}`;
+      const { data, error } = await supabase.storage.from('news-media').upload(fileName, photoFile);
+      if (error) throw error;
+      const { data: urlData } = supabase.storage.from('news-media').getPublicUrl(data.path);
+      return urlData.publicUrl;
+    } catch (error) {
+      console.error('Photo upload error:', error);
+      toast.error('Erreur lors du téléchargement de la photo');
+      return null;
+    } finally {
+      setUploadingPhoto(false);
+    }
+  };
 
   useEffect(() => {
     if (member && !isInitialized) {

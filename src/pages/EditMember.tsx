@@ -85,19 +85,23 @@ export default function EditMemberPage() {
         address: member.address || '',
         status: member.status,
         notes: member.notes || '',
+        photo_url: member.photo_url || '',
       });
+      if (member.photo_url) setPhotoPreview(member.photo_url);
       setIsInitialized(true);
     }
   }, [member, isInitialized]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!formData.first_name || !formData.last_name || !formData.family_id || !id) {
-      return;
+    if (!formData.first_name || !formData.last_name || !formData.family_id || !id) return;
+
+    let photoUrl = formData.photo_url || null;
+    if (photoFile) {
+      photoUrl = await uploadPhoto();
     }
 
-    await updateMember.mutateAsync({ id, ...formData as MemberFormData });
+    await updateMember.mutateAsync({ id, ...formData as MemberFormData, photo_url: photoUrl });
     navigate(`/membres/${id}`);
   };
 

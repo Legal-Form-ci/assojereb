@@ -152,7 +152,40 @@ export default function EditMemberPage() {
           </div>
         </div>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <Card className="card-elevated">
+            <CardHeader>
+              <CardTitle>Photo du membre</CardTitle>
+              <CardDescription>Modifier la photo du membre</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center gap-6">
+                <div
+                  className="relative w-32 h-32 rounded-xl border-2 border-dashed border-border hover:border-primary transition-colors cursor-pointer overflow-hidden bg-muted/50"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  {photoPreview ? (
+                    <>
+                      <img src={photoPreview} alt="Preview" className="w-full h-full object-cover" />
+                      <button type="button" onClick={(e) => { e.stopPropagation(); removePhoto(); }} className="absolute top-1 right-1 p-1 bg-destructive text-destructive-foreground rounded-full">
+                        <X className="h-3 w-3" />
+                      </button>
+                    </>
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center gap-2">
+                      <User className="h-10 w-10 text-muted-foreground/50" />
+                      <span className="text-xs text-muted-foreground">Cliquez pour ajouter</span>
+                    </div>
+                  )}
+                </div>
+                <input ref={fileInputRef} type="file" accept="image/*" onChange={handlePhotoSelect} className="hidden" />
+                <div className="flex-1">
+                  <p className="text-sm text-muted-foreground">Formats : JPG, PNG, GIF — Max : 5 Mo</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           <Card className="card-elevated">
             <CardHeader>
               <CardTitle>Informations personnelles</CardTitle>

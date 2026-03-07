@@ -311,8 +311,8 @@ export default function EditMemberPage() {
                 <Button type="button" variant="outline" onClick={() => navigate(-1)} className="flex-1">
                   Annuler
                 </Button>
-                <Button type="submit" className="flex-1 btn-primary-gradient" disabled={updateMember.isPending}>
-                  {updateMember.isPending ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Enregistrement...</> : <><Save className="mr-2 h-4 w-4" />Enregistrer</>}
+                <Button type="submit" className="flex-1 btn-primary-gradient" disabled={updateMember.isPending || uploadingPhoto}>
+                  {(updateMember.isPending || uploadingPhoto) ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{uploadingPhoto ? 'Téléchargement photo...' : 'Enregistrement...'}</> : <><Save className="mr-2 h-4 w-4" />Enregistrer</>}
                 </Button>
               </div>
             </CardContent>

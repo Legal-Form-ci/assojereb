@@ -402,6 +402,8 @@ function AdminDashboard() {
           </Card>
         </div>
       </div>
+      {/* Exceptional Contributions Widget */}
+      <ExceptionalContributionsWidget />
     </div>
   );
 }

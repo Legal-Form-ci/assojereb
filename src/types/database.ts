@@ -4,7 +4,7 @@ export type AppRole = 'admin' | 'president' | 'president_adjoint' | 'tresorier' 
 export type MemberStatus = 'actif' | 'inactif' | 'sympathisant';
 export type ContributionStatus = 'payee' | 'en_attente' | 'en_retard' | 'annulee';
 export type ContributionType = 'mensuelle' | 'exceptionnelle' | 'adhesion';
-export type GeographicZone = 'abidjan' | 'village' | 'ville_interieur' | 'exterieur' | 'diaspora';
+export type GeographicZone = 'grand_abidjan' | 'village' | 'ville_interieur' | 'yamoussoukro' | 'diaspora_africaine' | 'diaspora_occidentale' | 'abidjan' | 'exterieur' | 'diaspora';
 export type Gender = 'homme' | 'femme';
 
 export const ROLE_LABELS: Record<AppRole, string> = {

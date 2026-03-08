@@ -265,6 +265,142 @@ function AdminDashboard() {
           )}
         </CardContent>
       </Card>
+
+      {/* New registrations + Gender + Collection rate */}
+      <div className="grid lg:grid-cols-3 gap-6">
+        {/* New member registrations */}
+        <Card className="card-elevated lg:col-span-2">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <UserPlus className="h-5 w-5" />
+              Nouvelles inscriptions
+            </CardTitle>
+            <CardDescription>Évolution des inscriptions sur 6 mois</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {isLoading ? (
+              <Skeleton className="h-64 w-full" />
+            ) : (
+              <ResponsiveContainer width="100%" height={280}>
+                <AreaChart data={stats?.registrationsByMonth || []}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" />
+                  <YAxis stroke="hsl(var(--muted-foreground))" allowDecimals={false} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: 'hsl(var(--card))',
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: '8px',
+                    }}
+                    formatter={(value: number) => [value, 'Inscriptions']}
+                  />
+                  <defs>
+                    <linearGradient id="registrationGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <Area
+                    type="monotone"
+                    dataKey="count"
+                    stroke="hsl(var(--primary))"
+                    strokeWidth={2}
+                    fill="url(#registrationGradient)"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Gender + Collection rate */}
+        <div className="space-y-6">
+          {/* Gender distribution */}
+          <Card className="card-elevated">
+            <CardHeader className="pb-2">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <PieChartIcon className="h-4 w-4" />
+                Répartition par genre
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {isLoading ? (
+                <Skeleton className="h-32 w-full" />
+              ) : stats?.membersByGender && stats.membersByGender.length > 0 ? (
+                <div className="flex items-center gap-4">
+                  <ResponsiveContainer width="50%" height={120}>
+                    <PieChart>
+                      <Pie
+                        data={stats.membersByGender}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={30}
+                        outerRadius={50}
+                        dataKey="count"
+                        nameKey="gender"
+                      >
+                        {stats.membersByGender.map((entry, index) => (
+                          <Cell
+                            key={`gender-${index}`}
+                            fill={entry.gender === 'homme' ? '#1E88E5' : '#E91E63'}
+                          />
+                        ))}
+                      </Pie>
+                    </PieChart>
+                  </ResponsiveContainer>
+                  <div className="space-y-2">
+                    {stats.membersByGender.map((item) => (
+                      <div key={item.gender} className="flex items-center gap-2">
+                        <div
+                          className="w-3 h-3 rounded-full"
+                          style={{ backgroundColor: item.gender === 'homme' ? '#1E88E5' : '#E91E63' }}
+                        />
+                        <span className="text-sm capitalize">{item.gender === 'homme' ? 'Hommes' : 'Femmes'}</span>
+                        <span className="font-bold">{item.count}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="h-32 flex items-center justify-center text-muted-foreground text-sm">
+                  Aucune donnée
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Collection rate */}
+          <Card className="card-elevated">
+            <CardHeader className="pb-2">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Percent className="h-4 w-4" />
+                Taux de recouvrement
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {isLoading ? (
+                <Skeleton className="h-20 w-full" />
+              ) : (
+                <div className="text-center space-y-3">
+                  <div className="text-4xl font-bold text-primary">{stats?.collectionRate || 0}%</div>
+                  <div className="w-full h-3 bg-muted rounded-full overflow-hidden">
+                    <div
+                      className="h-full rounded-full transition-all duration-1000"
+                      style={{
+                        width: `${stats?.collectionRate || 0}%`,
+                        background: `linear-gradient(90deg, hsl(var(--primary)), hsl(var(--primary) / 0.7))`,
+                      }}
+                    />
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {stats?.totalContributions || 0} cotisations au total
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
   );
 }

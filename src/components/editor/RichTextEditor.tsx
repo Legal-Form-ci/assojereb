@@ -73,6 +73,9 @@ export function RichTextEditor({ content, onChange, placeholder }: RichTextEdito
     },
   });
 
+  // Sync external content changes (e.g. from AI generation)
+  const { useEffect } = require('react');
+  
   if (!editor) {
     return null;
   }

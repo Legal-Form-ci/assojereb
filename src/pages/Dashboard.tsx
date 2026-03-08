@@ -9,6 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Users, UserCheck, Wallet, Clock, TrendingUp, Home, Calendar, FileText, Shield, Eye, Newspaper, CreditCard, MapPin, UserPlus, PieChart as PieChartIcon, BarChart3, Percent } from 'lucide-react';
+import { ExceptionalContributionsWidget } from '@/components/dashboard/ExceptionalContributionsWidget';
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -798,18 +799,7 @@ function TresorierDashboard() {
           </CardContent>
         </Card>
 
-        <Card className="card-elevated">
-          <CardHeader>
-            <CardTitle className="text-base">Rappel</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">
-              En tant que Trésorier, vous pouvez voir tous les membres et cotisations, 
-              enregistrer les paiements, et générer des rapports. 
-              Vous ne pouvez pas modifier les paramètres système.
-            </p>
-          </CardContent>
-        </Card>
+        <ExceptionalContributionsWidget />
       </div>
     </div>
   );

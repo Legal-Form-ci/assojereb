@@ -270,10 +270,12 @@ export default function NewMemberPage() {
                   <Select value={formData.geographic_zone} onValueChange={(v) => updateField('geographic_zone', v as GeographicZone)}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="abidjan">Abidjan</SelectItem>
+                      <SelectItem value="grand_abidjan">Grand Abidjan</SelectItem>
                       <SelectItem value="village">Village</SelectItem>
                       <SelectItem value="ville_interieur">Ville de l'intérieur</SelectItem>
-                      <SelectItem value="diaspora">Diaspora</SelectItem>
+                      <SelectItem value="yamoussoukro">District de Yamoussoukro</SelectItem>
+                      <SelectItem value="diaspora_africaine">Diaspora Africaine</SelectItem>
+                      <SelectItem value="diaspora_occidentale">Diaspora Occidentale</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

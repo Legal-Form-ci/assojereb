@@ -18,6 +18,8 @@ import {
   Building2,
   Shield,
   BookOpen,
+  TreePine,
+  UsersRound,
 } from 'lucide-react';
 import { useState } from 'react';
 import logoAssojereb from '@/assets/logo-assojereb.png';
@@ -34,7 +36,9 @@ interface NavItem {
 const navItems: NavItem[] = [
   { icon: LayoutDashboard, label: 'Tableau de bord', href: '/dashboard' },
   { icon: Users, label: 'Membres', href: '/membres' },
+  { icon: UsersRound, label: 'Familles', href: '/familles', adminOnly: true },
   { icon: Building2, label: 'Maisons', href: '/maisons', adminOnly: true },
+  { icon: TreePine, label: 'Organigramme', href: '/organigramme' },
   { icon: Wallet, label: 'Cotisations', href: '/cotisations' },
   { icon: Newspaper, label: 'Actualités', href: '/gestion-actualites', permission: 'can_manage_news' },
   { icon: Shield, label: 'Gestion des rôles', href: '/gestion-roles', adminOnly: true },

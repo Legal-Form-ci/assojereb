@@ -43,8 +43,9 @@ export default function MembersPage() {
     const matchesFamily = familyFilter === 'all' || member.family_id === familyFilter;
     const matchesCategory = categoryFilter === 'all' || member.contribution_category_id === categoryFilter;
     const matchesStatus = statusFilter === 'all' || member.status === statusFilter;
+    const matchesZone = zoneFilter === 'all' || member.geographic_zone === zoneFilter;
     
-    return matchesSearch && matchesFamily && matchesCategory && matchesStatus;
+    return matchesSearch && matchesFamily && matchesCategory && matchesStatus && matchesZone;
   });
 
   // Pagination

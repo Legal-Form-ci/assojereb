@@ -1,6 +1,7 @@
 import { AppLayout } from '@/components/AppLayout';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
 import { useFamilyDashboardStats } from '@/hooks/useFamilyDashboardStats';
+import { ZONE_LABELS } from '@/types/database';
 import { useAuth } from '@/hooks/useAuth';
 import { usePermissions } from '@/hooks/usePermissions';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';

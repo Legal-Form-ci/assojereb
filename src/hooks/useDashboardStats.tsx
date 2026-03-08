@@ -84,6 +84,48 @@ export function useDashboardStats() {
         contributionsByMonth.push({ month: months[date.getMonth()], amount });
       }
 
+      // New member registrations by month (last 6 months)
+      const registrationsByMonth: { month: string; count: number }[] = [];
+      for (let i = 5; i >= 0; i--) {
+        const date = new Date();
+        date.setMonth(date.getMonth() - i);
+        const startOfMonth = new Date(date.getFullYear(), date.getMonth(), 1).toISOString();
+        const endOfMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59).toISOString();
+
+        const { count } = await supabase
+          .from('members')
+          .select('*', { count: 'exact', head: true })
+          .gte('created_at', startOfMonth)
+          .lte('created_at', endOfMonth);
+
+        registrationsByMonth.push({ month: months[date.getMonth()], count: count || 0 });
+      }
+
+      // Members by gender
+      const { data: genderData } = await supabase
+        .from('members')
+        .select('gender');
+
+      const genderCounts: Record<string, number> = {};
+      genderData?.forEach((m: { gender: string }) => {
+        genderCounts[m.gender] = (genderCounts[m.gender] || 0) + 1;
+      });
+      const membersByGender = Object.entries(genderCounts).map(([gender, count]) => ({ gender, count }));
+
+      // Contribution collection rate
+      const { count: paidCount } = await supabase
+        .from('contributions')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'payee');
+
+      const { count: totalContribCount } = await supabase
+        .from('contributions')
+        .select('*', { count: 'exact', head: true });
+
+      const collectionRate = totalContribCount && totalContribCount > 0
+        ? Math.round(((paidCount || 0) / totalContribCount) * 100)
+        : 0;
+
       return {
         totalMembers: totalMembers || 0,
         activeMembers: activeMembers || 0,
@@ -93,6 +135,9 @@ export function useDashboardStats() {
         membersByFamily,
         membersByZone,
         contributionsByMonth,
+        registrationsByMonth,
+        membersByGender,
+        collectionRate,
       };
     },
   });

@@ -30,6 +30,7 @@ export default function MembersPage() {
   const [familyFilter, setFamilyFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [zoneFilter, setZoneFilter] = useState<string>('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [generating, setGenerating] = useState(false);
 
@@ -42,8 +43,9 @@ export default function MembersPage() {
     const matchesFamily = familyFilter === 'all' || member.family_id === familyFilter;
     const matchesCategory = categoryFilter === 'all' || member.contribution_category_id === categoryFilter;
     const matchesStatus = statusFilter === 'all' || member.status === statusFilter;
+    const matchesZone = zoneFilter === 'all' || member.geographic_zone === zoneFilter;
     
-    return matchesSearch && matchesFamily && matchesCategory && matchesStatus;
+    return matchesSearch && matchesFamily && matchesCategory && matchesStatus && matchesZone;
   });
 
   // Pagination
@@ -202,6 +204,20 @@ export default function MembersPage() {
               <SelectItem value="actif">Actif</SelectItem>
               <SelectItem value="inactif">Inactif</SelectItem>
               <SelectItem value="sympathisant">Sympathisant</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={zoneFilter} onValueChange={(v) => { setZoneFilter(v); setCurrentPage(1); }}>
+            <SelectTrigger className="w-full sm:w-44">
+              <SelectValue placeholder="Zone" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Toutes zones</SelectItem>
+              <SelectItem value="grand_abidjan">Grand Abidjan</SelectItem>
+              <SelectItem value="village">Village</SelectItem>
+              <SelectItem value="ville_interieur">Ville de l'intérieur</SelectItem>
+              <SelectItem value="yamoussoukro">District de Yamoussoukro</SelectItem>
+              <SelectItem value="diaspora_africaine">Diaspora Africaine</SelectItem>
+              <SelectItem value="diaspora_occidentale">Diaspora Occidentale</SelectItem>
             </SelectContent>
           </Select>
         </div>

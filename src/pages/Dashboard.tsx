@@ -799,18 +799,7 @@ function TresorierDashboard() {
           </CardContent>
         </Card>
 
-        <Card className="card-elevated">
-          <CardHeader>
-            <CardTitle className="text-base">Rappel</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">
-              En tant que Trésorier, vous pouvez voir tous les membres et cotisations, 
-              enregistrer les paiements, et générer des rapports. 
-              Vous ne pouvez pas modifier les paramètres système.
-            </p>
-          </CardContent>
-        </Card>
+        <ExceptionalContributionsWidget />
       </div>
     </div>
   );

@@ -17,65 +17,57 @@ Tu connais parfaitement l'association:
 
 Tu dois répondre en français avec un ton chaleureux et professionnel.`;
 
-const NEWS_AUTO_GENERATE_PROMPT = `Tu es un rédacteur professionnel expert pour l'ASSOJEREB. Tu DOIS générer du contenu COURT, PERCUTANT et PROFESSIONNEL.
+const NEWS_AUTO_GENERATE_PROMPT = `Tu es un rédacteur professionnel de niveau premium pour l'ASSOJEREB, expert en communication sociale et communautaire.
+
+🧠 INTELLIGENCE CONTEXTUELLE:
+Tu dois être capable de comprendre et développer un contenu complet à partir de N'IMPORTE QUELLE entrée, même:
+- Un seul mot: "paquinou" → Article complet sur le Paquinou
+- Une émotion: "fier" → Publication inspirationnelle
+- Une phrase brève: "réunion réussie" → Compte-rendu engageant
+- Une idée: "partenariat" → Annonce de partenariat professionnelle
+
+🎯 DÉTECTION AUTOMATIQUE DU TYPE:
+- "evenement": fêtes, célébrations, rencontres, forums
+- "communique": annonces officielles, réunions
+- "deces": avis de décès (ton sobre et respectueux)
+- "mariage": mariages et unions
+- "anniversaire": anniversaires
+- "opportunite": opportunités, partenariats, emploi
+- "projet": projets communautaires
+- "general": autres
+
+📝 STYLE RÉSEAU SOCIAL PROFESSIONNEL:
+- Ton humain, direct, authentique — JAMAIS robotique
+- Phrases courtes à moyennes, rythmées
+- Sauts de ligne réguliers pour la lisibilité mobile
+- Émojis utilisés avec parcimonie (2-4 max par publication)
+- Phrase d'accroche percutante en première ligne
+- MAXIMUM 200 mots pour le contenu total
+- PAS de texte générique reconnaissable comme IA
+- PAS de superlatifs excessifs ni formules creuses
+
+📋 FORMAT HTML STRICT (JAMAIS de markdown **, ##, ###):
+- <h2> pour titre principal avec 1-2 emojis
+- <p><em>phrase d'accroche courte</em></p>
+- <p> pour paragraphes (courts, 2-3 phrases max!)
+- <strong> pour mettre en valeur les mots-clés
+- <ul><li> pour listes (max 4 points)
+- PAS de <br> entre les balises
+- PAS de paragraphes vides <p></p>
+- PAS de double saut de ligne
 
 🚨 RÈGLES ABSOLUES:
-
-1. DÉTECTE le type automatiquement:
-   - "evenement": fêtes, célébrations, rencontres
-   - "communique": annonces officielles
-   - "deces": avis de décès
-   - "mariage": mariages
-   - "anniversaire": anniversaires
-   - "opportunite": opportunités, partenariats
-   - "projet": projets communautaires
-   - "general": autres
-
-2. STYLE:
-   - Titre en MAJUSCULES, COURT et PERCUTANT (max 10 mots)
-   - Phrase d'accroche courte en italique
-   - MAXIMUM 150 mots pour le contenu total
-   - PAS de biographies longues
-   - PAS de textes inutiles ou répétitifs
-   - Phrases courtes et directes
-
-3. FORMAT HTML UNIQUEMENT (JAMAIS de markdown **, ##, ###):
-   - <h2> pour titre avec emojis
-   - <p><em>accroche courte</em></p>
-   - <p> pour paragraphes (courts!)
-   - <strong> pour gras
-   - <ul><li> pour listes
-   - PAS de <br> entre les balises de liste
-   - PAS de paragraphes vides
-   - PAS de double saut de ligne inutile
-
-4. EXEMPLE pour ÉVÉNEMENT:
-<h2>🎉 TITRE COURT 🎉</h2>
-<p><em>Accroche percutante en une phrase.</em></p>
-<p>Description brève (2 phrases max).</p>
-<ul>
-<li><strong>Point clé 1</strong></li>
-<li><strong>Point clé 2</strong></li>
-</ul>
-<p>📍 <strong>Lieu</strong> : Nom</p>
-<p>📅 <strong>Date</strong> : Période</p>
-<p>📞 <strong>Contact</strong> : Le Président de l'association</p>
-
-5. EXEMPLE pour DÉCÈS:
-<h2>🕊️ AVIS DE DÉCÈS</h2>
-<p><em>L'ASSOJEREB annonce avec douleur...</em></p>
-<p>Informations essentielles uniquement.</p>
-
-6. INTELLIGENCE: Même avec UN SEUL MOT en entrée, tu dois comprendre le contexte et générer un article complet, structuré et professionnel. Exemples:
-   - "paquinou" → Article sur le Paquinou 2026
-   - "décès" → Avis de décès type
-   - "réunion" → Communiqué de réunion
+1. Titre en MAJUSCULES, COURT et PERCUTANT (max 8 mots)
+2. Accroche en italique, une seule phrase
+3. Contenu structuré, aéré, concis
+4. Si pertinent: lieu, date, contact en fin
+5. Hashtags pertinents en fin (3-5 max dans un <p>)
 
 FORMAT DE RÉPONSE (JSON STRICT):
 {
   "title": "TITRE EN MAJUSCULES",
   "category": "evenement|communique|deces|mariage|anniversaire|opportunite|projet|general",
-  "content": "<h2>...</h2><p><em>accroche</em></p><p>contenu court</p>"
+  "content": "<h2>🎯 TITRE</h2><p><em>accroche</em></p><p>contenu</p>"
 }`;
 
 serve(async (req) => {
@@ -91,7 +83,7 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    // Handle image generation separately (non-streaming)
+    // Handle image generation (non-streaming)
     if (type === 'generate-news-image') {
       const userMessage = messages[0]?.content || 'Association africaine';
       
@@ -104,7 +96,7 @@ serve(async (req) => {
         body: JSON.stringify({
           model: "google/gemini-2.5-flash-image",
           messages: [
-            { role: "user", content: `Génère une image professionnelle et moderne pour illustrer cet article d'une association communautaire africaine ivoirienne: ${userMessage}. Style: professionnel, coloré, africain, communautaire. Format 16:9 paysage.` },
+            { role: "user", content: `Génère une image ultra-réaliste, professionnelle et moderne pour illustrer cette publication d'une association communautaire africaine ivoirienne: ${userMessage}. Style: photo-réaliste, haute qualité, couleurs vibrantes, composition professionnelle. Format 16:9 paysage. Sans texte, sans watermark, sans logo.` },
           ],
           modalities: ["image", "text"],
         }),
@@ -112,8 +104,7 @@ serve(async (req) => {
 
       if (!response.ok) {
         return new Response(JSON.stringify({ error: "Image generation failed" }), {
-          status: 500,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
 
@@ -121,12 +112,10 @@ serve(async (req) => {
       const imageUrl = data.choices?.[0]?.message?.images?.[0]?.image_url?.url;
       
       if (imageUrl) {
-        // Upload base64 image to storage
         const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
         const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
         const supabaseClient = createClient(supabaseUrl, supabaseKey);
         
-        // Convert base64 to blob
         const base64Data = imageUrl.replace(/^data:image\/\w+;base64,/, '');
         const binaryString = atob(base64Data);
         const bytes = new Uint8Array(binaryString.length);
@@ -135,7 +124,7 @@ serve(async (req) => {
         }
         
         const fileName = `ai-generated-${Date.now()}.png`;
-        const { data: uploadData, error: uploadError } = await supabaseClient.storage
+        const { error: uploadError } = await supabaseClient.storage
           .from('news-media')
           .upload(fileName, bytes, { contentType: 'image/png' });
         
@@ -147,15 +136,13 @@ serve(async (req) => {
         }
         
         const { data: publicUrl } = supabaseClient.storage.from('news-media').getPublicUrl(fileName);
-        
         return new Response(JSON.stringify({ image_url: publicUrl.publicUrl }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
       
       return new Response(JSON.stringify({ error: "No image generated" }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
@@ -170,14 +157,14 @@ serve(async (req) => {
     } else if (type === 'chat-with-context') {
       const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
       const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-      const supabase = createClient(supabaseUrl, supabaseKey);
+      const sb = createClient(supabaseUrl, supabaseKey);
       
       const [membersResult, familiesResult, housesResult, newsResult, categoriesResult] = await Promise.all([
-        supabase.from('members').select('id, first_name, last_name, status, family_id, profession').limit(100),
-        supabase.from('families').select('id, name, description').order('display_order'),
-        supabase.from('houses').select('id, name, house_number, family_id').order('house_number'),
-        supabase.from('news').select('id, title, category, published_at').eq('is_published', true).order('published_at', { ascending: false }).limit(20),
-        supabase.from('contribution_categories').select('id, name, monthly_amount').eq('is_active', true),
+        sb.from('members').select('id, first_name, last_name, status, family_id, profession').limit(100),
+        sb.from('families').select('id, name, description').order('display_order'),
+        sb.from('houses').select('id, name, house_number, family_id').order('house_number'),
+        sb.from('news').select('id, title, category, published_at').eq('is_published', true).order('published_at', { ascending: false }).limit(20),
+        sb.from('contribution_categories').select('id, name, monthly_amount').eq('is_active', true),
       ]);
 
       systemPrompt = SYSTEM_PROMPT + `\n\nDONNÉES EN TEMPS RÉEL:
@@ -205,7 +192,7 @@ serve(async (req) => {
 
     if (!response.ok) {
       if (response.status === 429) {
-        return new Response(JSON.stringify({ error: "Limite de requêtes atteinte." }), {
+        return new Response(JSON.stringify({ error: "Limite de requêtes atteinte. Réessayez dans quelques instants." }), {
           status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }

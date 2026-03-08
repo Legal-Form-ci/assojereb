@@ -26,6 +26,7 @@ import {
 } from 'recharts';
 
 const COLORS = ['#228B22', '#32CD32', '#90EE90', '#006400', '#228B22', '#2E8B57', '#3CB371'];
+const ZONE_COLORS = ['#1E88E5', '#43A047', '#FB8C00', '#8E24AA', '#E53935', '#00ACC1', '#F4511E', '#3949AB', '#7CB342'];
 
 // Component for Admin Dashboard
 function AdminDashboard() {

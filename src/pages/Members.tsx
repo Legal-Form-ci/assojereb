@@ -206,6 +206,20 @@ export default function MembersPage() {
               <SelectItem value="sympathisant">Sympathisant</SelectItem>
             </SelectContent>
           </Select>
+          <Select value={zoneFilter} onValueChange={(v) => { setZoneFilter(v); setCurrentPage(1); }}>
+            <SelectTrigger className="w-full sm:w-44">
+              <SelectValue placeholder="Zone" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Toutes zones</SelectItem>
+              <SelectItem value="grand_abidjan">Grand Abidjan</SelectItem>
+              <SelectItem value="village">Village</SelectItem>
+              <SelectItem value="ville_interieur">Ville de l'intérieur</SelectItem>
+              <SelectItem value="yamoussoukro">District de Yamoussoukro</SelectItem>
+              <SelectItem value="diaspora_africaine">Diaspora Africaine</SelectItem>
+              <SelectItem value="diaspora_occidentale">Diaspora Occidentale</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Table */}

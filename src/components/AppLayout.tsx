@@ -18,6 +18,8 @@ import {
   Building2,
   Shield,
   BookOpen,
+  TreePine,
+  UsersRound,
 } from 'lucide-react';
 import { useState } from 'react';
 import logoAssojereb from '@/assets/logo-assojereb.png';

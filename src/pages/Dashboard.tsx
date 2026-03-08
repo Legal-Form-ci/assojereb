@@ -198,34 +198,65 @@ function AdminDashboard() {
         </Card>
       </div>
 
-      {/* Members by zone */}
+      {/* Members by zone - Pie Chart */}
       <Card className="card-elevated">
         <CardHeader>
-          <CardTitle>Répartition géographique</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <MapPin className="h-5 w-5" />
+            Répartition géographique
+          </CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              {[1, 2, 3, 4].map((i) => (
-                <Skeleton key={i} className="h-20" />
-              ))}
+            <Skeleton className="h-64 w-full" />
+          ) : stats?.membersByZone && stats.membersByZone.length > 0 ? (
+            <div className="grid lg:grid-cols-2 gap-6 items-center">
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={stats.membersByZone.map(item => ({
+                      ...item,
+                      label: ZONE_LABELS[item.zone] || item.zone,
+                    }))}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ label, count }) => `${label} (${count})`}
+                    outerRadius={110}
+                    fill="#8884d8"
+                    dataKey="count"
+                    nameKey="label"
+                  >
+                    {stats.membersByZone.map((_, index) => (
+                      <Cell key={`zone-cell-${index}`} fill={ZONE_COLORS[index % ZONE_COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: 'hsl(var(--card))',
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: '8px',
+                    }}
+                    formatter={(value: number, name: string) => [value, name]}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="space-y-3">
+                {stats.membersByZone.map((item, index) => (
+                  <div key={item.zone} className="flex items-center gap-3">
+                    <div
+                      className="w-3 h-3 rounded-full shrink-0"
+                      style={{ backgroundColor: ZONE_COLORS[index % ZONE_COLORS.length] }}
+                    />
+                    <span className="text-sm flex-1">{ZONE_LABELS[item.zone] || item.zone}</span>
+                    <span className="font-bold text-primary">{item.count}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           ) : (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              {stats?.membersByZone?.map((item) => (
-                <div 
-                  key={item.zone}
-                  className="p-4 rounded-lg bg-muted/50 text-center"
-                >
-                  <div className="text-2xl font-bold text-primary">{item.count}</div>
-                  <div className="text-sm text-muted-foreground capitalize">{item.zone}</div>
-                </div>
-              ))}
-              {(!stats?.membersByZone || stats.membersByZone.length === 0) && (
-                <div className="col-span-4 text-center py-8 text-muted-foreground">
-                  Aucune donnée disponible
-                </div>
-              )}
+            <div className="h-64 flex items-center justify-center text-muted-foreground">
+              Aucune donnée disponible
             </div>
           )}
         </CardContent>

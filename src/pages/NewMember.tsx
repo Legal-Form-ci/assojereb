@@ -24,7 +24,7 @@ export default function NewMemberPage() {
   
   const [formData, setFormData] = useState<Partial<MemberFormData>>({
     gender: 'homme',
-    geographic_zone: 'abidjan',
+    geographic_zone: 'grand_abidjan',
     status: 'actif',
   });
   const [showPassword, setShowPassword] = useState(false);

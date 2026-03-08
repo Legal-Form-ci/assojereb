@@ -1,8 +1,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-
-type AppRole = 'admin' | 'responsable' | 'membre';
+import { AppRole } from '@/types/database';
 
 interface AuthContextType {
   user: User | null;
@@ -24,21 +23,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [userRole, setUserRole] = useState<AppRole | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchUserRole = async (userId: string) => {
+  const fetchUserRole = async (userId: string): Promise<AppRole | null> => {
     try {
-      const { data, error } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', userId)
-        .order('role')
-        .limit(1);
+      const { data, error } = await supabase.rpc('get_user_role', { _user_id: userId });
 
       if (error) {
         console.error('Error fetching user role:', error);
-        return null;
+        // Fallback: direct query
+        const { data: roleData } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', userId)
+          .order('created_at', { ascending: true })
+          .limit(1);
+        return (roleData?.[0]?.role as AppRole) || null;
       }
 
-      return data?.[0]?.role as AppRole || null;
+      return (data as AppRole) || null;
     } catch (err) {
       console.error('Error in fetchUserRole:', err);
       return null;
@@ -52,7 +53,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setSession(session);
         setUser(session?.user ?? null);
         
-        // Defer role fetching with setTimeout to avoid deadlock
         if (session?.user) {
           setTimeout(() => {
             fetchUserRole(session.user.id).then(setUserRole);
@@ -126,7 +126,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUserRole(null);
   };
 
-  const value = {
+  const adminLikeRoles: AppRole[] = ['admin', 'president', 'president_adjoint'];
+  const responsableRoles: AppRole[] = [...adminLikeRoles, 'responsable', 'chef_famille'];
+
+  const value: AuthContextType = {
     user,
     session,
     userRole,
@@ -135,7 +138,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     signUp,
     signOut,
     isAdmin: userRole === 'admin',
-    isResponsable: userRole === 'responsable' || userRole === 'admin',
+    isResponsable: responsableRoles.includes(userRole as AppRole),
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

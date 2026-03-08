@@ -19,11 +19,15 @@ export const ROLE_LABELS: Record<AppRole, string> = {
   membre: 'Membre',
 };
 
-export const ZONE_LABELS: Record<GeographicZone, string> = {
-  abidjan: 'Abidjan',
+export const ZONE_LABELS: Record<string, string> = {
+  grand_abidjan: 'Grand Abidjan',
   village: 'Village',
   ville_interieur: "Ville de l'intérieur",
-  exterieur: "Ville de l'intérieur", // Legacy mapping
+  yamoussoukro: 'District de Yamoussoukro',
+  diaspora_africaine: 'Diaspora Africaine',
+  diaspora_occidentale: 'Diaspora Occidentale',
+  abidjan: 'Grand Abidjan',
+  exterieur: "Extérieur",
   diaspora: 'Diaspora',
 };
 

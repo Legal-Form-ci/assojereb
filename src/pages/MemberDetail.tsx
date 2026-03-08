@@ -175,11 +175,19 @@ export default function MemberDetailPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-center mb-6">
-                <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center">
-                  <span className="text-3xl font-bold text-primary">
-                    {member.first_name.charAt(0)}{member.last_name.charAt(0)}
-                  </span>
-                </div>
+                {member.photo_url ? (
+                  <img 
+                    src={member.photo_url} 
+                    alt={`${member.first_name} ${member.last_name}`}
+                    className="w-24 h-24 rounded-full object-cover border-2 border-primary/20"
+                  />
+                ) : (
+                  <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center">
+                    <span className="text-3xl font-bold text-primary">
+                      {member.first_name.charAt(0)}{member.last_name.charAt(0)}
+                    </span>
+                  </div>
+                )}
               </div>
 
               <div className="space-y-3">

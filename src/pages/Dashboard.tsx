@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Users, UserCheck, Wallet, Clock, TrendingUp, Home, Calendar, FileText, Shield, Eye, Newspaper, CreditCard } from 'lucide-react';
+import { Users, UserCheck, Wallet, Clock, TrendingUp, Home, Calendar, FileText, Shield, Eye, Newspaper, CreditCard, MapPin } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';

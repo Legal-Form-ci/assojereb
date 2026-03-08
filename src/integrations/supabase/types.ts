@@ -652,6 +652,10 @@ export type Database = {
         | "exterieur"
         | "diaspora"
         | "ville_interieur"
+        | "grand_abidjan"
+        | "yamoussoukro"
+        | "diaspora_africaine"
+        | "diaspora_occidentale"
       member_status: "actif" | "inactif" | "sympathisant"
     }
     CompositeTypes: {
@@ -800,6 +804,10 @@ export const Constants = {
         "exterieur",
         "diaspora",
         "ville_interieur",
+        "grand_abidjan",
+        "yamoussoukro",
+        "diaspora_africaine",
+        "diaspora_occidentale",
       ],
       member_status: ["actif", "inactif", "sympathisant"],
     },

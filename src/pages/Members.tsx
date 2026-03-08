@@ -30,6 +30,7 @@ export default function MembersPage() {
   const [familyFilter, setFamilyFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [zoneFilter, setZoneFilter] = useState<string>('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [generating, setGenerating] = useState(false);
 

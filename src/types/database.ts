@@ -175,6 +175,9 @@ export interface DashboardStats {
   membersByFamily: { name: string; count: number }[];
   membersByZone: { zone: string; count: number }[];
   contributionsByMonth: { month: string; amount: number }[];
+  registrationsByMonth: { month: string; count: number }[];
+  membersByGender: { gender: string; count: number }[];
+  collectionRate: number;
 }
 
 // Permissions type

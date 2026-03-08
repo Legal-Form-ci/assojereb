@@ -23,6 +23,10 @@ import {
   PieChart,
   Pie,
   Cell,
+  LineChart,
+  Line,
+  AreaChart,
+  Area,
 } from 'recharts';
 
 const COLORS = ['#228B22', '#32CD32', '#90EE90', '#006400', '#228B22', '#2E8B57', '#3CB371'];

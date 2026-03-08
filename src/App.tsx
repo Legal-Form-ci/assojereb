@@ -24,6 +24,8 @@ import NewsPage from "./pages/NewsPage";
 import NewsDetailPage from "./components/news/NewsDetailPage";
 import Profile from "./pages/Profile";
 import HousesManagement from "./pages/HousesManagement";
+import FamiliesManagement from "./pages/FamiliesManagement";
+import OrganizationalPyramid from "./pages/OrganizationalPyramid";
 import MemberVerification from "./pages/MemberVerification";
 import RoleManagement from "./pages/RoleManagement";
 import UserGuide from "./pages/UserGuide";

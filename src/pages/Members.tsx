@@ -249,7 +249,7 @@ export default function MembersPage() {
                     </TableCell>
                     <TableCell className="hidden md:table-cell">{member.family?.name}</TableCell>
                     <TableCell className="hidden lg:table-cell">{member.contribution_category?.name || '-'}</TableCell>
-                    <TableCell className="hidden lg:table-cell capitalize">{member.geographic_zone}</TableCell>
+                    <TableCell className="hidden lg:table-cell">{ZONE_LABELS[member.geographic_zone] || member.geographic_zone}</TableCell>
                     <TableCell>{getStatusBadge(member.status)}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">

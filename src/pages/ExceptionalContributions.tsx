@@ -86,7 +86,7 @@ export default function ExceptionalContributionsPage() {
 
   const isPending = createExceptionalContribution.isPending || updateExceptionalContribution.isPending;
 
-  if (!isAdmin) {
+  if (!canManage) {
     return (
       <AppLayout>
         <div className="text-center py-12">

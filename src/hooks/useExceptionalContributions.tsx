@@ -36,6 +36,7 @@ export function useExceptionalContributions() {
         .from('exceptional_contributions')
         .insert({
           ...data,
+          due_date: data.due_date || null,
           created_by: user?.id,
         })
         .select()

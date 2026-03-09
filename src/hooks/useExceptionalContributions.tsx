@@ -58,7 +58,7 @@ export function useExceptionalContributions() {
     mutationFn: async ({ id, ...data }: ExceptionalContributionFormData & { id: string }) => {
       const { data: result, error } = await supabase
         .from('exceptional_contributions')
-        .update(data)
+        .update({ ...data, due_date: data.due_date || null })
         .eq('id', id)
         .select()
         .single();

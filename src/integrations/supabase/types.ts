@@ -631,6 +631,17 @@ export type Database = {
         }
         Returns: boolean
       }
+      update_own_member_profile: {
+        Args: {
+          _address?: string
+          _email?: string
+          _phone?: string
+          _photo_url?: string
+          _profession?: string
+          _whatsapp?: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role:

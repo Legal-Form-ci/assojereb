@@ -19,7 +19,8 @@ import { fr } from 'date-fns/locale';
 import { ExceptionalContribution } from '@/types/database';
 
 export default function ExceptionalContributionsPage() {
-  const { isAdmin } = useAuth();
+  const { isAdmin, userRole } = useAuth();
+  const canManage = isAdmin || ['president', 'president_adjoint', 'tresorier', 'tresorier_adjoint'].includes(userRole || '');
   const { exceptionalContributions, isLoading, createExceptionalContribution, updateExceptionalContribution, deleteExceptionalContribution } = useExceptionalContributions();
   
   const [dialogOpen, setDialogOpen] = useState(false);

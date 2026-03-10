@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { sanitizeHtml } from '@/lib/sanitize';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -160,7 +161,7 @@ export function AIChatbot() {
                     >
                       <div 
                         className="text-sm leading-relaxed [&_p]:mb-1 [&_li]:mb-0.5 [&_strong]:font-semibold"
-                        dangerouslySetInnerHTML={{ __html: formatContent(message.content) }}
+                        dangerouslySetInnerHTML={{ __html: sanitizeHtml(formatContent(message.content)) }}
                       />
                     </div>
                     {message.role === 'user' && (

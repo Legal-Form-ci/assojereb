@@ -1,4 +1,5 @@
 import { AppLayout } from '@/components/AppLayout';
+import { sanitizeHtml } from '@/lib/sanitize';
 import { useAuth } from '@/hooks/useAuth';
 import { usePermissions } from '@/hooks/usePermissions';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -327,7 +328,7 @@ export default function UserGuidePage() {
                   <AccordionContent className="pb-4">
                     <div 
                       className="prose prose-sm dark:prose-invert max-w-none pl-13"
-                      dangerouslySetInnerHTML={{ __html: section.content }}
+                      dangerouslySetInnerHTML={{ __html: sanitizeHtml(section.content) }}
                     />
                   </AccordionContent>
                 </AccordionItem>

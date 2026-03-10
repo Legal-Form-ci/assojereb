@@ -1,4 +1,5 @@
 import { AppLayout } from '@/components/AppLayout';
+import { sanitizeHtml } from '@/lib/sanitize';
 import { useAuth } from '@/hooks/useAuth';
 import { usePermissions } from '@/hooks/usePermissions';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';

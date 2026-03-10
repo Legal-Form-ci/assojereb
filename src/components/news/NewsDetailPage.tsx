@@ -1,4 +1,5 @@
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { sanitizeHtml } from '@/lib/sanitize';
 import { useNewsBySlug, NEWS_CATEGORIES } from '@/hooks/useNews';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';

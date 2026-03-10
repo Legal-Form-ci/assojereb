@@ -327,7 +327,7 @@ export default function UserGuidePage() {
                   <AccordionContent className="pb-4">
                     <div 
                       className="prose prose-sm dark:prose-invert max-w-none pl-13"
-                      dangerouslySetInnerHTML={{ __html: section.content }}
+                      dangerouslySetInnerHTML={{ __html: sanitizeHtml(section.content) }}
                     />
                   </AccordionContent>
                 </AccordionItem>

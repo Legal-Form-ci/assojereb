@@ -161,7 +161,7 @@ export function AIChatbot() {
                     >
                       <div 
                         className="text-sm leading-relaxed [&_p]:mb-1 [&_li]:mb-0.5 [&_strong]:font-semibold"
-                        dangerouslySetInnerHTML={{ __html: formatContent(message.content) }}
+                        dangerouslySetInnerHTML={{ __html: sanitizeHtml(formatContent(message.content)) }}
                       />
                     </div>
                     {message.role === 'user' && (

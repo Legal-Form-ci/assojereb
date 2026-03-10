@@ -98,7 +98,7 @@ export default function NewsDetailPage() {
               <CardContent className="p-6 md:p-8">
                 <div 
                   className="prose prose-lg dark:prose-invert max-w-none prose-headings:font-serif prose-headings:font-bold prose-headings:uppercase prose-p:text-foreground prose-p:leading-relaxed prose-strong:text-primary prose-strong:font-bold prose-em:text-secondary prose-em:text-sm prose-ul:list-disc prose-ol:list-decimal prose-li:text-foreground prose-h2:text-xl prose-h2:mt-6 prose-h2:mb-3 prose-h3:text-lg prose-h3:mt-4 prose-h3:mb-2 prose-table:border prose-td:p-2 prose-th:p-2 prose-td:border prose-th:border"
-                  dangerouslySetInnerHTML={{ __html: article.content }}
+                  dangerouslySetInnerHTML={{ __html: sanitizeHtml(article.content) }}
                 />
               </CardContent>
             </Card>

@@ -76,6 +76,28 @@ serve(async (req) => {
   }
 
   try {
+    // ===== AUTHENTICATION CHECK =====
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return new Response(JSON.stringify({ error: 'Non autorisé' }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const supabaseAuth = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_ANON_KEY')!,
+      { global: { headers: { Authorization: authHeader } } }
+    );
+
+    const { data: claimsData, error: claimsError } = await supabaseAuth.auth.getClaims(authHeader.replace('Bearer ', ''));
+    if (claimsError || !claimsData?.claims) {
+      return new Response(JSON.stringify({ error: 'Non autorisé' }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    // ===== END AUTH CHECK =====
+
     const { messages, type } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     
@@ -83,7 +105,7 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    // Handle image generation (non-streaming)
+    // Handle image generation (non-streaming) - use ultra-realistic model
     if (type === 'generate-news-image') {
       const userMessage = messages[0]?.content || 'Association africaine';
       
@@ -94,16 +116,28 @@ serve(async (req) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "google/gemini-2.5-flash-image",
+          model: "google/gemini-3-pro-image-preview",
           messages: [
-            { role: "user", content: `Génère une image ultra-réaliste, professionnelle et moderne pour illustrer cette publication d'une association communautaire africaine ivoirienne: ${userMessage}. Style: photo-réaliste, haute qualité, couleurs vibrantes, composition professionnelle. Format 16:9 paysage. Sans texte, sans watermark, sans logo.` },
+            { role: "user", content: `Generate an ultra-realistic, photorealistic, professional high-quality photograph to illustrate this publication for an African Ivorian community association. Subject: ${userMessage}. Style: photojournalistic, natural lighting, vibrant colors, sharp details, professional composition, 16:9 landscape format. The image must look like a real photograph taken by a professional photographer - NOT like AI art or digital illustration. No text, no watermark, no logo, no artificial-looking elements.` },
           ],
           modalities: ["image", "text"],
         }),
       });
 
       if (!response.ok) {
-        return new Response(JSON.stringify({ error: "Image generation failed" }), {
+        const errorText = await response.text();
+        console.error("Image generation error:", response.status, errorText);
+        if (response.status === 429) {
+          return new Response(JSON.stringify({ error: "Limite de requêtes atteinte. Réessayez dans quelques instants." }), {
+            status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        if (response.status === 402) {
+          return new Response(JSON.stringify({ error: "Crédits IA épuisés." }), {
+            status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        return new Response(JSON.stringify({ error: "Échec de la génération d'image" }), {
           status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
@@ -141,7 +175,7 @@ serve(async (req) => {
         });
       }
       
-      return new Response(JSON.stringify({ error: "No image generated" }), {
+      return new Response(JSON.stringify({ error: "Aucune image générée" }), {
         status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
@@ -155,16 +189,13 @@ serve(async (req) => {
     } else if (type === 'news-enhance') {
       systemPrompt = `Tu es un rédacteur pour l'ASSOJEREB. Enrichis le contenu en HTML propre. Utilise <h2>, <h3>, <p>, <strong>, <em>, <ul><li>. JAMAIS de markdown. Contenu CONCIS.`;
     } else if (type === 'chat-with-context') {
-      const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-      const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-      const sb = createClient(supabaseUrl, supabaseKey);
-      
+      // Use authenticated user's client to respect RLS
       const [membersResult, familiesResult, housesResult, newsResult, categoriesResult] = await Promise.all([
-        sb.from('members').select('id, first_name, last_name, status, family_id, profession').limit(100),
-        sb.from('families').select('id, name, description').order('display_order'),
-        sb.from('houses').select('id, name, house_number, family_id').order('house_number'),
-        sb.from('news').select('id, title, category, published_at').eq('is_published', true).order('published_at', { ascending: false }).limit(20),
-        sb.from('contribution_categories').select('id, name, monthly_amount').eq('is_active', true),
+        supabaseAuth.from('members').select('id, first_name, last_name, status, family_id, profession').limit(100),
+        supabaseAuth.from('families').select('id, name, description').order('display_order'),
+        supabaseAuth.from('houses').select('id, name, house_number, family_id').order('house_number'),
+        supabaseAuth.from('news').select('id, title, category, published_at').eq('is_published', true).order('published_at', { ascending: false }).limit(20),
+        supabaseAuth.from('contribution_categories').select('id, name, monthly_amount').eq('is_active', true),
       ]);
 
       systemPrompt = SYSTEM_PROMPT + `\n\nDONNÉES EN TEMPS RÉEL:

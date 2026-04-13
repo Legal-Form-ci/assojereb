@@ -32,6 +32,44 @@ Deno.serve(async (req: Request) => {
     return new Response('ok', { headers: corsHeaders });
   }
 
+  // ===== AUTHENTICATION: Verify cron secret or JWT =====
+  const cronSecret = req.headers.get('x-cron-secret');
+  const authHeader = req.headers.get('Authorization');
+  const expectedSecret = Deno.env.get('CRON_SECRET');
+
+  // Allow if valid cron secret is provided
+  const isCronAuth = expectedSecret && cronSecret === expectedSecret;
+
+  // Allow if valid JWT from an admin user
+  let isAdminAuth = false;
+  if (!isCronAuth && authHeader?.startsWith('Bearer ')) {
+    const { createClient } = await import("https://esm.sh/@supabase/supabase-js@2");
+    const supabaseAuth = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_ANON_KEY')!,
+      { global: { headers: { Authorization: authHeader } } }
+    );
+    const { data, error } = await supabaseAuth.auth.getClaims(authHeader.replace('Bearer ', ''));
+    if (!error && data?.claims?.sub) {
+      // Check if user has admin role
+      const { data: roleData } = await supabaseAuth
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', data.claims.sub)
+        .in('role', ['admin', 'president'])
+        .limit(1);
+      isAdminAuth = (roleData?.length ?? 0) > 0;
+    }
+  }
+
+  if (!isCronAuth && !isAdminAuth) {
+    return new Response(
+      JSON.stringify({ error: 'Non autorisé' }),
+      { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+  }
+  // ===== END AUTHENTICATION =====
+
   try {
     console.log('🔔 Starting contribution reminders job...');
 
